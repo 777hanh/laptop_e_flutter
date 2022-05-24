@@ -12,7 +12,7 @@ class ListProduct extends StatelessWidget {
   ListProduct({this.snapShot, this.name});
   List<Product> demoProductItems = demoProduct;
 
-  Widget getProducWidget(List<Product> products, context) {
+  Widget getProducWidget(context) {
 //* Slelect data of List Product
     switch (name) {
       case 'Acer':
@@ -127,7 +127,7 @@ class ListProduct extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
                       // _buildProduct(context),
-                      getProducWidget(demoProductItems, context),
+                      getProducWidget(context),
                       // getProductSnapshot(context),
                     ],
                   ),

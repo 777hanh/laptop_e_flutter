@@ -64,6 +64,13 @@ class ListCategories extends StatelessWidget {
             style: TextStyle(
                 color: Colors.black, fontSize: 28, fontFamily: 'Lato'),
           ),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios, color: Colors.black),
+            onPressed: () {
+              Navigator.of(context)
+                  .pushReplacement(MaterialPageRoute(builder: (ctx) => Home()));
+            },
+          ),
           centerTitle: true,
           backgroundColor: Colors.transparent,
           elevation: 0.0,

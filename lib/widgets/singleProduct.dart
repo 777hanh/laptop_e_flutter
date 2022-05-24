@@ -16,12 +16,12 @@ String formatString(String? str) {
   List<String> lstSTR = str!.split('\\n');
   String newStr = '';
   if (lstSTR.length > 1) {
-    newStr = '     ' + lstSTR[0];
+    newStr = lstSTR[0];
     for (int i = 1; i < lstSTR.length; i++) {
-      newStr = newStr + '\n     ' + lstSTR[i];
+      newStr = newStr + '\n' + lstSTR[i];
     }
   } else {
-    newStr = '     ' + lstSTR[0];
+    newStr = lstSTR[0];
   }
   // print(newStr);
   return newStr;
@@ -162,7 +162,7 @@ class _SingleProductState extends State<SingleProduct> {
                             SizedBox(
                               height: 10,
                             ),
-                            Text('Quentity',
+                            Text('Quantity',
                                 style: TextStyle(fontFamily: 'Lato')),
                             SizedBox(
                               height: 10,
@@ -251,13 +251,13 @@ class _SingleProductState extends State<SingleProduct> {
                                       backgroundColor: Colors.red,
                                     ),
                                     onPressed: () {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (ctx) => Cart(
-                                              product: widget.product!,
-                                              quantity: count),
-                                        ),
-                                      );
+                                      // Navigator.of(context).push(
+                                      //   MaterialPageRoute(
+                                      //     builder: (ctx) => Cart(
+                                      //         product: widget.product!,
+                                      //         quantity: count),
+                                      //   ),
+                                      // );
                                       // print(count);
                                     },
                                     child: Text(

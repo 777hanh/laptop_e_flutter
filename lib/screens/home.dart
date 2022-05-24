@@ -1,6 +1,9 @@
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:carousel_pro/carousel_pro.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:elaptop/screens/cartscreen.dart';
+import 'package:elaptop/screens/categories.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:elaptop/models/cart.dart';
 // import 'package:elaptop/provider/categoryProvider.dart';
 import 'package:elaptop/screens/listbrand.dart';
 import 'package:elaptop/screens/listproduct.dart';
@@ -61,13 +64,13 @@ class _HomeState extends State<Home> {
           ListTile(
             selected: homeColor,
             onTap: () {
-              setState(() {
-                homeColor = true;
-                contactColor = false;
-                aboutColor = false;
-                cartColor = false;
-                categoryColor = false;
-              });
+              // setState(() {
+              //   homeColor = true;
+              //   contactColor = false;
+              //   aboutColor = false;
+              //   cartColor = false;
+              //   categoryColor = false;
+              // });
             },
             leading: Icon(Icons.home),
             title: Text(
@@ -78,13 +81,18 @@ class _HomeState extends State<Home> {
           ListTile(
             selected: categoryColor,
             onTap: () {
-              setState(() {
-                categoryColor = true;
-                contactColor = false;
-                aboutColor = false;
-                cartColor = false;
-                homeColor = false;
-              });
+              // setState(() {
+              //   categoryColor = true;
+              //   contactColor = false;
+              //   aboutColor = false;
+              //   cartColor = false;
+              //   homeColor = false;
+              // });
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (ctx) => ListCategories(),
+                ),
+              );
             },
             leading: Icon(Icons.dashboard),
             title: Text(
@@ -96,12 +104,17 @@ class _HomeState extends State<Home> {
             selected: cartColor,
             onTap: () {
               setState(() {
-                cartColor = true;
-                contactColor = false;
-                aboutColor = false;
-                homeColor = false;
-                categoryColor = false;
+                // cartColor = true;
+                // contactColor = false;
+                // aboutColor = false;
+                // homeColor = false;
+                // categoryColor = false;
               });
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (ctx) => Cart(),
+                ),
+              );
             },
             leading: Icon(Icons.shopping_bag_rounded),
             title: Text(
@@ -116,13 +129,13 @@ class _HomeState extends State<Home> {
           ListTile(
             selected: aboutColor,
             onTap: () {
-              setState(() {
-                aboutColor = true;
-                contactColor = false;
-                homeColor = false;
-                cartColor = false;
-                categoryColor = false;
-              });
+              // setState(() {
+              //   aboutColor = true;
+              //   contactColor = false;
+              //   homeColor = false;
+              //   cartColor = false;
+              //   categoryColor = false;
+              // });
             },
             leading: Icon(Icons.info_rounded),
             title: Text(
@@ -133,13 +146,13 @@ class _HomeState extends State<Home> {
           ListTile(
             selected: contactColor,
             onTap: () {
-              setState(() {
-                contactColor = true;
-                homeColor = false;
-                aboutColor = false;
-                cartColor = false;
-                categoryColor = false;
-              });
+              // setState(() {
+              //   contactColor = true;
+              //   homeColor = false;
+              //   aboutColor = false;
+              //   cartColor = false;
+              //   categoryColor = false;
+              // });
             },
             leading: Icon(Icons.phone),
             title: Text(
@@ -360,6 +373,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     List<Product> allProductsList =
         Provider.of<List<Product>>(context, listen: true);
+    // CartModel cart = Provider.of<CartModel>(context, listen: true);
     //*set data for all products
     // print('logger=====: ${allProductsList}');
     allProducts = allProductsList;
