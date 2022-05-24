@@ -1,6 +1,7 @@
 import 'package:elaptop/models/cart.dart';
 import 'package:elaptop/models/product.dart';
 import 'package:elaptop/widgets/mySingleCartproduct.dart';
+import 'package:elaptop/widgets/notification_button.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -72,6 +73,8 @@ class _CheckOutState extends State<CheckOut> {
 
   @override
   Widget build(BuildContext context) {
+    double discount = 10;
+    double shipping = 60000;
     CartModel cart = Provider.of<CartModel>(context, listen: true);
 
     return Scaffold(
@@ -108,10 +111,7 @@ class _CheckOutState extends State<CheckOut> {
           icon: Icon(Icons.arrow_back_ios, color: Colors.black),
         ),
         actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.notifications_none, color: Colors.black),
-            onPressed: () {},
-          ),
+          NotificationButton(),
         ],
       ),
 //* body
@@ -153,10 +153,14 @@ class _CheckOutState extends State<CheckOut> {
                                 'Your Price',
                                 total(cart),
                               ),
-                              _buildBottomDetail('Discount', '0%'),
-                              _buildBottomDetailPrice('Shipping', 60000),
+                              _buildBottomDetail(
+                                  'Discount', discount.toString() + '%'),
+                              _buildBottomDetailPrice('Shipping', shipping),
                               _buildBottomDetailPrice(
-                                  'Total', total(cart) + 60000),
+                                  'Total',
+                                  total(cart) +
+                                      shipping -
+                                      (total(cart) * discount / 100)),
                             ],
                           ),
                         ),

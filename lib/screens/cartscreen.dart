@@ -1,8 +1,12 @@
 import 'package:elaptop/models/cart.dart';
 import 'package:elaptop/models/product.dart';
+import 'package:elaptop/provider/productProvider.dart';
+import 'package:elaptop/provider/products-provider.dart';
 import 'package:elaptop/screens/checkout.dart';
 import 'package:elaptop/screens/detail.dart';
+import 'package:elaptop/screens/home.dart';
 import 'package:elaptop/widgets/mySingleCartproduct.dart';
+import 'package:elaptop/widgets/notification_button.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:page_transition/page_transition.dart';
@@ -25,6 +29,7 @@ class _CartState extends State<Cart> {
 
   @override
   Widget build(BuildContext context) {
+    ProductProvider? productProvider = Provider.of<ProductProvider>(context);
     CartModel cart = Provider.of<CartModel>(context, listen: true);
     // cart.products!.map((e) => print('logger: $e'));
     // print('logger: ${cart.products!.length}');
@@ -45,6 +50,7 @@ class _CartState extends State<Cart> {
                     color: Colors.white,
                     fontWeight: FontWeight.bold)),
             onPressed: () {
+              productProvider.addNotification("Notification");
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (ctx) => CheckOut(),
@@ -63,15 +69,12 @@ class _CartState extends State<Cart> {
         elevation: 0.0,
         leading: IconButton(
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => Home()));
           },
           icon: Icon(Icons.arrow_back_ios, color: Colors.black),
         ),
         actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.notifications_none, color: Colors.black),
-            onPressed: () {},
-          ),
+          NotificationButton(),
         ],
       ),
 //* Body

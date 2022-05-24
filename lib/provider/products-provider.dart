@@ -28,4 +28,5 @@ class Products_Provider {
     });
     return newList;
   }
+  
 }

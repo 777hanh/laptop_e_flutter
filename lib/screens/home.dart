@@ -7,8 +7,10 @@ import 'package:elaptop/screens/categories.dart';
 // import 'package:elaptop/provider/categoryProvider.dart';
 import 'package:elaptop/screens/listbrand.dart';
 import 'package:elaptop/screens/listproduct.dart';
+import 'package:elaptop/screens/profileScreen.dart';
 import 'package:elaptop/widgets/myCardBrand.dart';
 import 'package:elaptop/widgets/myCardProduct.dart';
+import 'package:elaptop/widgets/notification_button.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -119,6 +121,28 @@ class _HomeState extends State<Home> {
             leading: Icon(Icons.shopping_bag_rounded),
             title: Text(
               'Cart',
+              style: TextStyle(fontSize: 18, fontFamily: 'Lato'),
+            ),
+          ),
+          ListTile(
+            selected: cartColor,
+            onTap: () {
+              setState(() {
+                // cartColor = true;
+                // contactColor = false;
+                // aboutColor = false;
+                // homeColor = false;
+                // categoryColor = false;
+              });
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (ctx) => Profile(),
+                ),
+              );
+            },
+            leading: Icon(Icons.account_circle_rounded),
+            title: Text(
+              'Profile',
               style: TextStyle(fontSize: 18, fontFamily: 'Lato'),
             ),
           ),
@@ -398,12 +422,7 @@ class _HomeState extends State<Home> {
             //     padding: EdgeInsets.only(left: 10),
             //     child: Image.asset('assets/logo.png')),
             child: Icon(Icons.menu_rounded, color: Colors.black, size: 35)),
-        actions: <Widget>[
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.notifications_outlined, color: Colors.black),
-          ),
-        ],
+        actions: <Widget>[NotificationButton()],
       ),
       body: Container(
         margin: EdgeInsets.symmetric(horizontal: 15),

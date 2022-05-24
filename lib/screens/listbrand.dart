@@ -1,6 +1,7 @@
 import 'package:elaptop/screens/home.dart';
 import 'package:elaptop/screens/listproduct.dart';
 import 'package:elaptop/widgets/myCardBrand.dart';
+import 'package:elaptop/widgets/notification_button.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -159,10 +160,7 @@ class ListBrand extends StatelessWidget {
               icon: Icon(Icons.search, color: Colors.black),
               onPressed: () {},
             ),
-            IconButton(
-              icon: Icon(Icons.notifications_outlined, color: Colors.black),
-              onPressed: () {},
-            ),
+            NotificationButton(),
           ],
         ),
         body: SafeArea(
