@@ -17,13 +17,14 @@ class BottomNavigationBarC extends StatefulWidget {
   _BottomNavigationBarCState createState() => _BottomNavigationBarCState();
 }
 
+int index = 0;
+
 class _BottomNavigationBarCState extends State<BottomNavigationBarC> {
-  static const IconData shopping_bag_outlined = IconData(0xf37d, fontFamily: 'MaterialIcons');
-  late int index;
+  static const IconData shopping_bag_outlined =
+      IconData(0xf37d, fontFamily: 'MaterialIcons');
   @override
   void initState() {
     super.initState();
-      index = 0;
   }
 
   bodyWidget(int pos) {
@@ -47,7 +48,7 @@ class _BottomNavigationBarCState extends State<BottomNavigationBarC> {
         size: 30,
       ),
       const Icon(Icons.dashboard, size: 30),
-      const Icon(shopping_bag_outlined  , size: 30),
+      const Icon(shopping_bag_outlined, size: 30),
       const Icon(Icons.account_circle_rounded, size: 30),
     ];
     return Scaffold(
@@ -71,7 +72,7 @@ class _BottomNavigationBarCState extends State<BottomNavigationBarC> {
           height: 60,
           index: index,
           items: items,
-          onTap: (index) => {setState(() => this.index = index)}),
+          onTap: (indexValue) => {setState(() => index = indexValue)}),
       body: bodyWidget(index),
     );
   }

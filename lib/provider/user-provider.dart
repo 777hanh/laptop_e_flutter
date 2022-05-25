@@ -20,7 +20,7 @@ class User_Provider {
 
   List<UserModel> _userFromSnapShot(QuerySnapshot snapshot) {
     List<UserModel> newList = [];
-    snapshot.docs.asMap().forEach((index, element) {
+    snapshot.docs.forEach((element) {
       UserModel user = UserModel(
           userId: element['UserId'],
           userName: element['UserName'],

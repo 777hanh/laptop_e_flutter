@@ -8,7 +8,7 @@ class Cart_Provider {
 
   Stream<List<CartModel>> get allCart {
     return cartCollection
-        .where('user', isEqualTo: 'demouserid')
+        // .where('user', isEqualTo: 'demouserid')
         // .where('user', isEqualTo: getUserId.toString())
         .snapshots()
         .map((snapshot) {

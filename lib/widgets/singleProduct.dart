@@ -1,5 +1,9 @@
+import 'package:elaptop/models/cart.dart';
+import 'package:elaptop/models/user.dart';
+import 'package:elaptop/provider/cartProvider.dart';
 import 'package:elaptop/provider/productProvider.dart';
 import 'package:elaptop/screens/cartscreen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -29,10 +33,37 @@ String formatString(String? str) {
   return newStr;
 }
 
+void CheckIsProductInCart(
+    String idProduct, context, List<CartModel> lstCart, double quantity) {
+  List<CartModel> lstCheck =
+      lstCart.where((item) => item.idProduct == idProduct).toList();
+  if (lstCheck.length > 0) {
+    CartProvider cartProvider =
+        Provider.of<CartProvider>(context, listen: false);
+    cartProvider.addProductCartIsExistInCart(idProduct, quantity);
+    print('Có hàng');
+  } else {
+    CartProvider cartProvider =
+        Provider.of<CartProvider>(context, listen: false);
+    cartProvider.addProductToCart(idProduct, quantity);
+  }
+}
+
 class _SingleProductState extends State<SingleProduct> {
   int count = 1;
   @override
   Widget build(BuildContext context) {
+    User currentUser = FirebaseAuth.instance.currentUser!;
+    List<UserModel> snapShot =
+        Provider.of<List<UserModel>>(context, listen: false);
+    List<UserModel> user =
+        snapShot.where((element) => element.userId == currentUser.uid).toList();
+    // print('LOGGER_USERCURRENT: ${user[0].userId}');
+    //filter list cart by current userId
+    List<CartModel> lstCart =
+        Provider.of<List<CartModel>>(context, listen: true)
+            .where((element) => element.idUser == user[0].userId)
+            .toList();
     ProductProvider productProvider = Provider.of<ProductProvider>(context);
     return ListView(
       children: [
@@ -254,14 +285,10 @@ class _SingleProductState extends State<SingleProduct> {
                                       backgroundColor: Colors.red,
                                     ),
                                     onPressed: () {
-                                      // Navigator.of(context).push(
-                                      //   MaterialPageRoute(
-                                      //     builder: (ctx) => Cart(
-                                      //         product: widget.product!,
-                                      //         quantity: count),
-                                      //   ),
-                                      // );
-                                      // print(count);
+                                      //Todo:
+                                      CheckIsProductInCart(widget.product!.id,
+                                          context, lstCart, count.toDouble());
+                                      //Todo
                                       productProvider
                                           .addNotification("Notification");
                                     },

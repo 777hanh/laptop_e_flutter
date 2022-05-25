@@ -1,5 +1,6 @@
 import 'package:elaptop/models/cart.dart';
 import 'package:elaptop/models/product.dart';
+import 'package:elaptop/models/user.dart';
 import 'package:elaptop/provider/authProvider.dart';
 import 'package:elaptop/provider/cartProvider.dart';
 import 'package:elaptop/provider/productProvider.dart';
@@ -9,6 +10,7 @@ import 'package:elaptop/screens/detail.dart';
 import 'package:elaptop/screens/home.dart';
 import 'package:elaptop/widgets/mySingleCartproduct.dart';
 import 'package:elaptop/widgets/notification_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:page_transition/page_transition.dart';
@@ -29,16 +31,23 @@ class _CartState extends State<Cart> {
     super.initState();
   }
 
+
   @override
   Widget build(BuildContext context) {
-    // CartProvider? cartProvider = Provider.of<CartProvider>(context);
-    // ProductProvider productProvider = Provider.of<ProductProvider>(context);
-    // print('LOGGER 1: ${authProvider.getUserId}');
+    User currentUser = FirebaseAuth.instance.currentUser!;
+    List<UserModel> snapShot =
+        Provider.of<List<UserModel>>(context, listen: true);
+    List<UserModel> user =
+        snapShot.where((element) => element.userId == currentUser.uid).toList();
+    // print('LOGGER_USERCURRENT: ${user[0].userId}');
+    //filter list cart by current userId
     List<CartModel> lstCart =
-        Provider.of<List<CartModel>>(context, listen: true).toList();
+        Provider.of<List<CartModel>>(context, listen: true)
+            .where((element) => element.idUser == user[0].userId)
+            .toList();
 
     // cart.products!.map((e) => print('logger: $e'));
-    // print('logger: ${lstCart}');
+    // print('logger: ${lstCart[0].quantity}');
     return Scaffold(
       bottomNavigationBar: Container(
         height: 70,

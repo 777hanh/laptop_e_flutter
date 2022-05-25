@@ -32,8 +32,8 @@ class CartProvider with ChangeNotifier {
     await docRef.set({
       'idProduct': idProduct,
       'quantity': quantity,
-      // 'user': getUserId,
-      'user': 'demouserid',
+      'user': getUserId,
+      // 'user': 'demouserid',
       'id': docRef.id.toString()
     });
   }
@@ -42,6 +42,34 @@ class CartProvider with ChangeNotifier {
   Future<void> updateProductCart(String id, double quantity) async {
     getUidAuth();
     await cartCollection.doc(id).update({'quantity': quantity});
+  }
+
+  Future<void> addProductCartIsExistInCart(
+      String idProduct, double quantity) async {
+    List<CartModel> newListCart = [];
+    CartModel temp;
+    QuerySnapshot cartSnapShot = await FirebaseFirestore.instance
+        .collection("cart")
+        .where('user', isEqualTo: getUserId)
+        .get();
+    cartSnapShot.docs.forEach((element) {
+      temp = CartModel(
+        id: element['id'],
+        idUser: element['user'],
+        idProduct: element['idProduct'],
+        quantity: element['quantity'].toDouble(),
+      );
+      newListCart.add(temp);
+    });
+
+    List<CartModel> newCart =
+        newListCart.where((item) => item.idProduct == idProduct).toList();
+
+    await cartCollection
+        .doc(newCart[0].id)
+        .update({'quantity': quantity + (newCart[0].quantity!.toDouble())});
+
+    print('LOGGER_USERID: ${getUserId} \n LOGGER_LIST_CART: ${newCart[0].id}');
   }
 
   //delete product to cart
