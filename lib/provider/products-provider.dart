@@ -1,12 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elaptop/models/product.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Products_Provider {
   List<Product> allProductDataList = [];
 
   final CollectionReference allProductCollection =
       FirebaseFirestore.instance.collection('products');
-      
+
   Stream<List<Product>> get allProducts {
     return allProductCollection.snapshots().map((snapshot) {
       return _listAllProductsFromSnapShot(snapshot);
@@ -29,5 +30,4 @@ class Products_Provider {
     });
     return newList;
   }
-  
 }

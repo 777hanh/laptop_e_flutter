@@ -31,7 +31,8 @@ class _CartState extends State<Cart> {
 
   @override
   Widget build(BuildContext context) {
-    CartProvider? cartProvider = Provider.of<CartProvider>(context);
+    // CartProvider? cartProvider = Provider.of<CartProvider>(context);
+    // ProductProvider productProvider = Provider.of<ProductProvider>(context);
     // print('LOGGER 1: ${authProvider.getUserId}');
     List<CartModel> lstCart =
         Provider.of<List<CartModel>>(context, listen: true).toList();
@@ -77,8 +78,7 @@ class _CartState extends State<Cart> {
         elevation: 0.0,
         leading: IconButton(
           onPressed: () {
-            Navigator.of(context)
-                .pushReplacement(MaterialPageRoute(builder: (ctx) => Home()));
+            Navigator.of(context).pop();
           },
           icon: Icon(Icons.arrow_back_ios, color: Colors.black),
         ),
@@ -91,8 +91,10 @@ class _CartState extends State<Cart> {
         margin: EdgeInsets.symmetric(horizontal: 10),
         height: MediaQuery.of(context).size.height * (710 / 812),
         child: ListView(
-          children:
-              lstCart.map((item) => MySingleCartProduct(cart: item)).toList(),
+          children: lstCart
+              .map((item) =>
+                  MySingleCartProduct(cart: item, isInCartScreen: true))
+              .toList(),
         ),
       ),
     );

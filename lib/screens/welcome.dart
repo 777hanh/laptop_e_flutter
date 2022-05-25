@@ -20,7 +20,7 @@ class Welcome extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     Container(
-                      height: 350,
+                      height: 300,
                       width: double.infinity,
                       decoration: BoxDecoration(
                         image: DecorationImage(
@@ -61,7 +61,8 @@ class Welcome extends StatelessWidget {
                           width: 265,
                           child: RaisedButton(
                             onPressed: () {
-                              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx)=> Login()));
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(builder: (ctx) => Login()));
                             },
                             color: Color(0xFF0B5EA7),
                             child: Text(
@@ -89,7 +90,9 @@ class Welcome extends StatelessWidget {
                                 fontFamily: 'Lato')),
                         GestureDetector(
                             onTap: () {
-                              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx)=> SignUp()));
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (ctx) => SignUp()));
                             },
                             child: Text(' Sign Up',
                                 style: TextStyle(

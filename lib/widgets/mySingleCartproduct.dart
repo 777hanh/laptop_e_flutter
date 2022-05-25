@@ -10,7 +10,8 @@ import 'package:provider/provider.dart';
 class MySingleCartProduct extends StatelessWidget {
   // const SingleCartProduct({Key? key}) : super(key: key);
   CartModel cart;
-  MySingleCartProduct({required this.cart});
+  bool? isInCartScreen;
+  MySingleCartProduct({required this.cart, this.isInCartScreen});
 
   @override
   Widget build(BuildContext context) {
@@ -102,14 +103,16 @@ class MySingleCartProduct extends StatelessWidget {
                                         color: Colors.black,
                                       ),
                                       onTap: () {
-                                        if (amount > 1) {
-                                          amount = amount - 1;
-                                          cartProvider.updateProductCart(
-                                              cart.id!, amount);
-                                        } else {
-                                          cartProvider
-                                              .deleteProductCart(cart.id!);
-                                        }
+                                        if (isInCartScreen == true) {
+                                          if (amount > 1) {
+                                            amount = amount - 1;
+                                            cartProvider.updateProductCart(
+                                                cart.id!, amount);
+                                          } else {
+                                            cartProvider
+                                                .deleteProductCart(cart.id!);
+                                          }
+                                        } else {}
                                       }),
                                   Text(
                                     amount.toInt().toString(),
@@ -125,9 +128,11 @@ class MySingleCartProduct extends StatelessWidget {
                                       color: Colors.black,
                                     ),
                                     onTap: () {
-                                      amount = amount + 1;
-                                      cartProvider.updateProductCart(
-                                          cart.id!, amount);
+                                      if (isInCartScreen == true) {
+                                        amount = amount + 1;
+                                        cartProvider.updateProductCart(
+                                            cart.id!, amount);
+                                      } else {}
                                     },
                                   ),
                                 ],

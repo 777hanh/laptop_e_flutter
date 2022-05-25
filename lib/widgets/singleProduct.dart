@@ -1,6 +1,8 @@
+import 'package:elaptop/provider/productProvider.dart';
 import 'package:elaptop/screens/cartscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 import '../models/product.dart';
 
 class SingleProduct extends StatefulWidget {
@@ -31,6 +33,7 @@ class _SingleProductState extends State<SingleProduct> {
   int count = 1;
   @override
   Widget build(BuildContext context) {
+    ProductProvider productProvider = Provider.of<ProductProvider>(context);
     return ListView(
       children: [
         Column(
@@ -259,6 +262,8 @@ class _SingleProductState extends State<SingleProduct> {
                                       //   ),
                                       // );
                                       // print(count);
+                                      productProvider
+                                          .addNotification("Notification");
                                     },
                                     child: Text(
                                       'Add To Cart',

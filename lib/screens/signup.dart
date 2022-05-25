@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elaptop/screens/login.dart';
 import 'package:elaptop/widgets/changeScreen.dart';
 import 'package:elaptop/widgets/mySnackBar.dart';
@@ -27,6 +28,8 @@ bool obserText = true;
 String? email;
 String? password;
 String? username;
+bool isMale = true;
+String? phone;
 
 class _SignUpState extends State<SignUp> {
   handleRedirectLoginScreen() {
@@ -70,7 +73,16 @@ class _SignUpState extends State<SignUp> {
       try {
         UserCredential result = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: email!, password: password!);
-        print(result.user!.uid);
+        FirebaseFirestore.instance
+            .collection('User')
+            .doc(result.user!.uid)
+            .set({
+          "UserName": username,
+          'UserId': result.user!.uid,
+          "UserEmail": email,
+          "UserGender": isMale == true ? "Male" : "Female",
+          "phone": phone,
+        });
         handRedirect();
       } on FirebaseAuthException catch (err) {
         _scaffoldKey.currentState!.showSnackBar(
@@ -177,7 +189,7 @@ class _SignUpState extends State<SignUp> {
             validator: (value) {
               if (value == '') {
                 return 'Please Fill Password';
-              } else if (value.toString().length < 7) {
+              } else if (value.toString().length < 4) {
                 return 'Password Is Too Short!';
               }
               return null;
@@ -194,19 +206,47 @@ class _SignUpState extends State<SignUp> {
               FocusScope.of(context).unfocus();
             },
           ),
-
-// //* Input-phonenumber
-//           MyTextFormField(
-//             name: 'Phone Number',
-//             validator: (value) {
-//               if (value == '') {
-//                 return 'Please Fill Phone Number';
-//               } else if (value.toString().length < 10) {
-//                 return 'Phone Number Must Be 10!';
-//               }
-//               return '';
-//             },
-//           ),
+//* Input -gender
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                isMale = !isMale;
+              });
+            },
+            child: Container(
+              height: 60,
+              padding: EdgeInsets.only(left: 10),
+              width: double.infinity,
+              decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
+              child: Center(
+                child: Row(
+                  children: [
+                    Text(
+                      isMale == true ? "Male" : "Female",
+                      style: TextStyle(color: Colors.black87, fontSize: 18),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+//* Input-phonenumber
+          MyTextFormField(
+            name: 'Phone Number',
+            onChanged: (value) {
+              setState(() {
+                phone = value.toString();
+              });
+            },
+            validator: (value) {
+              if (value == '') {
+                return 'Please Fill Phone Number';
+              } else if (value.toString().length < 10) {
+                return 'Phone Number Must Be 10!';
+              }
+              return null;
+            },
+          ),
         ],
       ),
     );

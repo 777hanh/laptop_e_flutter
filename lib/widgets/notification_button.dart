@@ -22,12 +22,17 @@ class NotificationButton extends StatelessWidget {
             ),
             badgeColor: Colors.red,
             child: IconButton(
-              icon: Icon(Icons.notifications_none, color: Colors.black),
-              onPressed: () {},
+              // icon: Icon(Icons.notifications_none, color: Colors.black),
+              icon: Icon(Icons.shopping_bag_rounded, color: Colors.black),
+              onPressed: () {
+                print('heheheheheeheh');
+              },
             ))
         : IconButton(
-            icon: Icon(Icons.notifications_none, color: Colors.black),
-            onPressed: () {},
+            icon: Icon(Icons.shopping_bag_rounded, color: Colors.black),
+            onPressed: () {
+              print('huhuhuhuhuhu');
+            },
           );
   }
 }

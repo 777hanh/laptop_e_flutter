@@ -141,6 +141,7 @@ class _CheckOutState extends State<CheckOut> {
                           children: lstCart
                               .map((item) => MySingleCartProduct(
                                     cart: item,
+                                    isInCartScreen: false,
                                   ))
                               .toList(),
                         ),

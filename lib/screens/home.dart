@@ -1,5 +1,7 @@
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:carousel_pro/carousel_pro.dart';
+import 'package:elaptop/models/user.dart';
+import 'package:elaptop/provider/productProvider.dart';
 import 'package:elaptop/screens/cartscreen.dart';
 import 'package:elaptop/screens/categories.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,10 +9,12 @@ import 'package:elaptop/screens/categories.dart';
 // import 'package:elaptop/provider/categoryProvider.dart';
 import 'package:elaptop/screens/listbrand.dart';
 import 'package:elaptop/screens/listproduct.dart';
+import 'package:elaptop/screens/login.dart';
 import 'package:elaptop/screens/profileScreen.dart';
 import 'package:elaptop/widgets/myCardBrand.dart';
 import 'package:elaptop/widgets/myCardProduct.dart';
 import 'package:elaptop/widgets/notification_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -29,9 +33,6 @@ class _HomeState extends State<Home> {
 //*temp - List product
   List<Product> allProducts = [];
   List<Product> popularProducts = [];
-  // List<Product> demoProducPopulartItems =
-  //     demoProduct.where((item) => item.isPopular).toList();
-  // List<Product> lstProduct = demoProduct.toList();
 //*temp
 
   bool homeColor = true;
@@ -42,12 +43,20 @@ class _HomeState extends State<Home> {
   bool contactColor = false;
 
   Widget _buildMyDrawer() {
+    ProductProvider productProvider = Provider.of<ProductProvider>(context);
+
+    User currentUser = FirebaseAuth.instance.currentUser!;
+    List<UserModel> snapShot =
+        Provider.of<List<UserModel>>(context, listen: true);
+    List<UserModel> user =
+        snapShot.where((element) => element.userId == currentUser.uid).toList();
+    // print('LOGGER: ${user.userEmail}');
     return Drawer(
       child: ListView(
         children: <Widget>[
           UserAccountsDrawerHeader(
             accountName: Text(
-              'Demo',
+              user.length > 0 ? user[0].userName : '',
               style: TextStyle(
                 color: Colors.black,
               ),
@@ -57,7 +66,7 @@ class _HomeState extends State<Home> {
               backgroundImage: AssetImage('assets/userImage.png'),
             ),
             accountEmail: Text(
-              'demo@gmail.com',
+              user.length > 0 ? user[0].userEmail : '',
               style: TextStyle(
                 color: Colors.black,
               ),
@@ -90,6 +99,7 @@ class _HomeState extends State<Home> {
               //   cartColor = false;
               //   homeColor = false;
               // });
+
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (ctx) => ListCategories(),
@@ -112,6 +122,7 @@ class _HomeState extends State<Home> {
                 // homeColor = false;
                 // categoryColor = false;
               });
+              productProvider.resetNotification();
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (ctx) => Cart(),
@@ -185,7 +196,14 @@ class _HomeState extends State<Home> {
             ),
           ),
           ListTile(
-            onTap: () {},
+            onTap: () {
+              FirebaseAuth.instance.signOut();
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (ctx) => Login(),
+                ),
+              );
+            },
             leading: Icon(Icons.exit_to_app_rounded),
             title: Text(
               'Logout',

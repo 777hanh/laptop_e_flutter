@@ -3,23 +3,15 @@
 // import 'package:elaptop/screens/signup.dart';
 import 'package:elaptop/models/cart.dart';
 import 'package:elaptop/models/product.dart';
+import 'package:elaptop/models/user.dart';
 import 'package:elaptop/provider/authProvider.dart';
 import 'package:elaptop/provider/cartProvider.dart';
-// import 'package:elaptop/provider/categoryProvider.dart';
 import 'package:elaptop/provider/carts-provider.dart';
 import 'package:elaptop/provider/productProvider.dart';
 import 'package:elaptop/provider/products-provider.dart';
-import 'package:elaptop/screens/categories.dart';
-import 'package:elaptop/screens/checkout.dart';
-import 'package:elaptop/screens/detail.dart';
-import 'package:elaptop/screens/home.dart';
-import 'package:elaptop/screens/listproduct.dart';
-import 'package:elaptop/screens/login.dart';
-import 'package:elaptop/screens/profileScreen.dart';
+import 'package:elaptop/provider/user-provider.dart';
 import 'package:elaptop/screens/splash.dart';
-import 'package:elaptop/screens/testScreen.dart';
 import 'package:elaptop/screens/welcome.dart';
-import 'package:elaptop/widgets/bottomNavigation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -48,6 +40,12 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<CartProvider>(
           create: (context) => CartProvider(),
         ),
+        StreamProvider<List<UserModel>>.value(
+          value: User_Provider().allUsers,
+          catchError: (_, __) => [],
+          initialData: [],
+          child: MyApp(),
+        ),
         StreamProvider<List<Product>>.value(
           value: Products_Provider().allProducts,
           catchError: (_, __) => [],
@@ -67,17 +65,17 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
         debugShowCheckedModeBanner: false,
-        home: Profile(),
-        // home: StreamBuilder(
-        //     stream: FirebaseAuth.instance.authStateChanges(),
-        //     builder: (context, snapshot) {
-        //       if (snapshot.hasData) {
-        //         return SplashScreen(snapshot: snapshot);
-        //         // return Home();
-        //       } else {
-        //         return Welcome();
-        //       }
-        //     }),
+        // home: Profile(),
+        home: StreamBuilder(
+            stream: FirebaseAuth.instance.authStateChanges(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return SplashScreen(snapshot: snapshot);
+                // return Home();
+              } else {
+                return Welcome();
+              }
+            }),
       ),
     );
   }
