@@ -1,4 +1,6 @@
+import 'package:elaptop/models/cart.dart';
 import 'package:elaptop/models/product.dart';
+import 'package:elaptop/provider/cartProvider.dart';
 import 'package:elaptop/screens/detail.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -7,15 +9,17 @@ import 'package:provider/provider.dart';
 
 class MySingleCartProduct extends StatelessWidget {
   // const SingleCartProduct({Key? key}) : super(key: key);
-  String idProduct;
-  dynamic quantity;
-  MySingleCartProduct({required this.idProduct, required this.quantity});
+  CartModel cart;
+  MySingleCartProduct({required this.cart});
 
   @override
   Widget build(BuildContext context) {
+    CartProvider? cartProvider = Provider.of<CartProvider>(context);
+    double amount = 0;
+    amount = cart.quantity!;
     //get product by id
     List<Product> _product = Provider.of<List<Product>>(context, listen: true)
-        .where((element) => element.id == idProduct)
+        .where((element) => element.id == cart.idProduct)
         .toList();
     return Container(
       height: 140,
@@ -97,9 +101,18 @@ class MySingleCartProduct extends StatelessWidget {
                                         Icons.remove,
                                         color: Colors.black,
                                       ),
-                                      onTap: () {}),
+                                      onTap: () {
+                                        if (amount > 1) {
+                                          amount = amount - 1;
+                                          cartProvider.updateProductCart(
+                                              cart.id!, amount);
+                                        } else {
+                                          cartProvider
+                                              .deleteProductCart(cart.id!);
+                                        }
+                                      }),
                                   Text(
-                                    quantity.toString(),
+                                    amount.toInt().toString(),
                                     style: TextStyle(
                                       fontSize: 18,
                                       color: Colors.black,
@@ -111,7 +124,11 @@ class MySingleCartProduct extends StatelessWidget {
                                       Icons.add,
                                       color: Colors.black,
                                     ),
-                                    onTap: () {},
+                                    onTap: () {
+                                      amount = amount + 1;
+                                      cartProvider.updateProductCart(
+                                          cart.id!, amount);
+                                    },
                                   ),
                                 ],
                               ),

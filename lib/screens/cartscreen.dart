@@ -1,5 +1,7 @@
 import 'package:elaptop/models/cart.dart';
 import 'package:elaptop/models/product.dart';
+import 'package:elaptop/provider/authProvider.dart';
+import 'package:elaptop/provider/cartProvider.dart';
 import 'package:elaptop/provider/productProvider.dart';
 import 'package:elaptop/provider/products-provider.dart';
 import 'package:elaptop/screens/checkout.dart';
@@ -29,10 +31,13 @@ class _CartState extends State<Cart> {
 
   @override
   Widget build(BuildContext context) {
-    ProductProvider? productProvider = Provider.of<ProductProvider>(context);
-    CartModel cart = Provider.of<CartModel>(context, listen: true);
+    CartProvider? cartProvider = Provider.of<CartProvider>(context);
+    // print('LOGGER 1: ${authProvider.getUserId}');
+    List<CartModel> lstCart =
+        Provider.of<List<CartModel>>(context, listen: true).toList();
+
     // cart.products!.map((e) => print('logger: $e'));
-    // print('logger: ${cart.products!.length}');
+    // print('logger: ${lstCart}');
     return Scaffold(
       bottomNavigationBar: Container(
         height: 70,
@@ -50,7 +55,10 @@ class _CartState extends State<Cart> {
                     color: Colors.white,
                     fontWeight: FontWeight.bold)),
             onPressed: () {
-              productProvider.addNotification("Notification");
+              // cartProvider.getUidAuth();
+              // print('${cartProvider.getUserId}');
+              // cartProvider.addProductToCart('kqKUEDDfNzrfxQijOhdc', 1);
+              // productProvider.addNotification("Notification");
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (ctx) => CheckOut(),
@@ -69,7 +77,8 @@ class _CartState extends State<Cart> {
         elevation: 0.0,
         leading: IconButton(
           onPressed: () {
-            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => Home()));
+            Navigator.of(context)
+                .pushReplacement(MaterialPageRoute(builder: (ctx) => Home()));
           },
           icon: Icon(Icons.arrow_back_ios, color: Colors.black),
         ),
@@ -82,10 +91,8 @@ class _CartState extends State<Cart> {
         margin: EdgeInsets.symmetric(horizontal: 10),
         height: MediaQuery.of(context).size.height * (710 / 812),
         child: ListView(
-          children: cart.products!
-              .map((item) => MySingleCartProduct(
-                  idProduct: item['idProduct'], quantity: item['quantity']))
-              .toList(),
+          children:
+              lstCart.map((item) => MySingleCartProduct(cart: item)).toList(),
         ),
       ),
     );

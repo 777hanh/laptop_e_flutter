@@ -6,6 +6,7 @@ class Products_Provider {
 
   final CollectionReference allProductCollection =
       FirebaseFirestore.instance.collection('products');
+      
   Stream<List<Product>> get allProducts {
     return allProductCollection.snapshots().map((snapshot) {
       return _listAllProductsFromSnapShot(snapshot);

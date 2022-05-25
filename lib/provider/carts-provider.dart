@@ -1,30 +1,32 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elaptop/models/cart.dart';
-import 'package:flutter/material.dart';
 
 class Cart_Provider {
   List<CartModel> cartDataList = [];
   final CollectionReference cartCollection =
       FirebaseFirestore.instance.collection('cart');
 
-  Stream<CartModel> get allCart {
+  Stream<List<CartModel>> get allCart {
     return cartCollection
         .where('user', isEqualTo: 'demouserid')
+        // .where('user', isEqualTo: getUserId.toString())
         .snapshots()
         .map((snapshot) {
-      return _CartFromSnapShot(snapshot);
+      return _ListAllCartFromSnapShot(snapshot);
     });
   }
 
-  CartModel _CartFromSnapShot(QuerySnapshot snapshot) {
-    CartModel? cart;
+  List<CartModel> _ListAllCartFromSnapShot(QuerySnapshot snapshot) {
+    List<CartModel> newList = [];
     snapshot.docs.asMap().forEach((index, element) {
-      cart = CartModel(
-        id: element.id,
+      CartModel cart = CartModel(
+        id: element['id'],
         idUser: element['user'],
-        products: element['products'],
+        idProduct: element['idProduct'],
+        quantity: element['quantity'].toDouble(),
       );
+      newList.add(cart);
     });
-    return cart!;
+    return newList;
   }
 }

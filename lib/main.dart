@@ -3,6 +3,8 @@
 // import 'package:elaptop/screens/signup.dart';
 import 'package:elaptop/models/cart.dart';
 import 'package:elaptop/models/product.dart';
+import 'package:elaptop/provider/authProvider.dart';
+import 'package:elaptop/provider/cartProvider.dart';
 // import 'package:elaptop/provider/categoryProvider.dart';
 import 'package:elaptop/provider/carts-provider.dart';
 import 'package:elaptop/provider/productProvider.dart';
@@ -37,8 +39,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider<AuthProvider>(
+          create: (context) => AuthProvider(),
+        ),
         ChangeNotifierProvider<ProductProvider>(
           create: (context) => ProductProvider(),
+        ),
+        ChangeNotifierProvider<CartProvider>(
+          create: (context) => CartProvider(),
         ),
         StreamProvider<List<Product>>.value(
           value: Products_Provider().allProducts,
@@ -46,9 +54,10 @@ class MyApp extends StatelessWidget {
           initialData: [],
           child: MyApp(),
         ),
-        StreamProvider<CartModel>.value(
+        StreamProvider<List<CartModel>>.value(
           value: Cart_Provider().allCart,
-          initialData: CartModel(),
+          initialData: [],
+          catchError: (_, __) => [],
           child: MyApp(),
         ),
       ],

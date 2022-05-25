@@ -1,19 +1,16 @@
+import 'package:elaptop/screens/cartscreen.dart';
+
 class CartModel {
   final String? id;
-  final List? products;
+  final String? idProduct;
   final String? idUser;
+  final double? quantity;
 
-  CartModel({this.id, this.products, this.idUser});
+  CartModel({this.id, this.idProduct, this.idUser, this.quantity});
 }
 
-CartModel demoCart =
-    CartModel(id: '9mtBRKujBRxbrVIxaX5s', idUser: 'demouserid', products: [
-  {
-    'idProduct': '3BfSxTDGHOYrskEtbUTW',
-    'quantity': 1,
-  },
-  {
-    'idProduct': '3fqnPoMcO4tZPAWRjoeT',
-    'quantity': 1,
-  },
-]);
+List<CartModel> demoCart = [
+  CartModel(
+
+  ),
+];

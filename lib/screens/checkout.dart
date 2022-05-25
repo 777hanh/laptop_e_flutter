@@ -12,16 +12,16 @@ class CheckOut extends StatefulWidget {
 }
 
 class _CheckOutState extends State<CheckOut> {
-  double total(CartModel cartlst) {
+  double total(List<CartModel> cartlst) {
     double totalPrice = 0;
     List<Product> allProductsList =
         Provider.of<List<Product>>(context, listen: true).toList();
-    for (int i = 0; i < cartlst.products!.length; i++) {
+    for (int i = 0; i < cartlst.length; i++) {
       totalPrice += allProductsList
-              .where((j) => j.id == cartlst.products![i]['idProduct'])
+              .where((j) => j.id == cartlst[i].idProduct)
               .toList()[0]
               .price *
-          cartlst.products![i]['quantity'];
+          cartlst[i].quantity!;
     }
     // print('logger: ${totalPrice}');
     return totalPrice;
@@ -75,7 +75,8 @@ class _CheckOutState extends State<CheckOut> {
   Widget build(BuildContext context) {
     double discount = 10;
     double shipping = 60000;
-    CartModel cart = Provider.of<CartModel>(context, listen: true);
+    List<CartModel> lstCart =
+        Provider.of<List<CartModel>>(context, listen: true);
 
     return Scaffold(
       bottomNavigationBar: Container(
@@ -137,10 +138,10 @@ class _CheckOutState extends State<CheckOut> {
                         ),
                         SizedBox(height: 20),
                         Column(
-                          children: cart.products!
+                          children: lstCart
                               .map((item) => MySingleCartProduct(
-                                  idProduct: item['idProduct'],
-                                  quantity: item['quantity']))
+                                    cart: item,
+                                  ))
                               .toList(),
                         ),
                         SizedBox(height: 20),
@@ -151,16 +152,16 @@ class _CheckOutState extends State<CheckOut> {
                             children: <Widget>[
                               _buildBottomDetailPrice(
                                 'Your Price',
-                                total(cart),
+                                total(lstCart),
                               ),
                               _buildBottomDetail(
                                   'Discount', discount.toString() + '%'),
                               _buildBottomDetailPrice('Shipping', shipping),
                               _buildBottomDetailPrice(
                                   'Total',
-                                  total(cart) +
+                                  total(lstCart) +
                                       shipping -
-                                      (total(cart) * discount / 100)),
+                                      (total(lstCart) * discount / 100)),
                             ],
                           ),
                         ),
