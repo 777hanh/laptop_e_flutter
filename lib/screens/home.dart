@@ -22,20 +22,18 @@ import '../models/product.dart';
 
 class Home extends StatefulWidget {
   @override
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
   State<Home> createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
-
 //*temp - List product
   List<Product> allProducts = [];
   List<Product> popularProducts = [];
 //*temp
 
-  bool homeColor = true;
+  bool homeColor = false;
   bool cartColor = false;
   bool categoryColor = false;
 
@@ -45,11 +43,18 @@ class _HomeState extends State<Home> {
   Widget _buildMyDrawer() {
     ProductProvider productProvider = Provider.of<ProductProvider>(context);
 
-    User currentUser = FirebaseAuth.instance.currentUser!;
+    User? currentUser;
+    try {
+      currentUser = FirebaseAuth.instance.currentUser;
+    } catch (e) {
+      FirebaseAuth.instance.currentUser!.reload();
+      currentUser = FirebaseAuth.instance.currentUser;
+    }
     List<UserModel> snapShot =
         Provider.of<List<UserModel>>(context, listen: true);
-    List<UserModel> user =
-        snapShot.where((element) => element.userId == currentUser.uid).toList();
+    List<UserModel> user = snapShot
+        .where((element) => element.userId == currentUser!.uid)
+        .toList();
     // print('LOGGER: ${user.userEmail}');
     return Drawer(
       child: ListView(
@@ -123,10 +128,10 @@ class _HomeState extends State<Home> {
                 // categoryColor = false;
               });
               productProvider.resetNotification();
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (ctx) => Cart(),
-                ),
+              Navigator.push(
+                context,
+                PageTransition(
+                    type: PageTransitionType.rightToLeft, child: Cart()),
               );
             },
             leading: Icon(Icons.shopping_bag_rounded),
@@ -145,10 +150,11 @@ class _HomeState extends State<Home> {
                 // homeColor = false;
                 // categoryColor = false;
               });
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (ctx) => Profile(),
-                ),
+              Navigator.push(
+                context,
+                PageTransition(
+                    type: PageTransitionType.rightToLeftWithFade,
+                    child: Profile()),
               );
             },
             leading: Icon(Icons.account_circle_rounded),
@@ -198,10 +204,11 @@ class _HomeState extends State<Home> {
           ListTile(
             onTap: () {
               FirebaseAuth.instance.signOut();
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                  builder: (ctx) => Login(),
-                ),
+              Navigator.pushReplacement(
+                context,
+                PageTransition(
+                    type: PageTransitionType.rightToLeftWithFade,
+                    child: Login()),
               );
             },
             leading: Icon(Icons.exit_to_app_rounded),
@@ -421,7 +428,7 @@ class _HomeState extends State<Home> {
     allProducts = allProductsList;
     popularProducts = allProductsList.where((item) => item.isPopular).toList();
     return Scaffold(
-      key: _key,
+      key: widget._key,
       drawer: _buildMyDrawer(),
       appBar: AppBar(
         title: Text(
@@ -434,7 +441,7 @@ class _HomeState extends State<Home> {
         backgroundColor: Colors.transparent,
         leading: GestureDetector(
             onTap: () {
-              _key.currentState!.openDrawer();
+              widget._key.currentState!.openDrawer();
             },
             // child: Container(
             //     padding: EdgeInsets.only(left: 10),

@@ -12,10 +12,13 @@ import '../models/product.dart';
 class SingleProduct extends StatefulWidget {
   final Product? product;
   SingleProduct({required this.product});
+  bool isSeeMore = false;
 
   @override
   State<SingleProduct> createState() => _SingleProductState();
 }
+
+int maxLineOfDescription = 3;
 
 //* format description
 String formatString(String? str) {
@@ -53,7 +56,10 @@ class _SingleProductState extends State<SingleProduct> {
   int count = 1;
   @override
   Widget build(BuildContext context) {
-    User currentUser = FirebaseAuth.instance.currentUser!;
+    User? currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      currentUser!.reload();
+    }
     List<UserModel> snapShot =
         Provider.of<List<UserModel>>(context, listen: false);
     List<UserModel> user =
@@ -144,7 +150,7 @@ class _SingleProductState extends State<SingleProduct> {
                         child: Text(
                           formatString(widget.product!.description),
                           style: TextStyle(fontFamily: 'Lato', fontSize: 16),
-                          // maxLines: 3,
+                          maxLines: widget.isSeeMore ? 40 : 3,
                         ),
                       ),
                       Padding(
@@ -154,26 +160,27 @@ class _SingleProductState extends State<SingleProduct> {
                           vertical: 10,
                         ),
 //* button seemore
-                        // child: GestureDetector(
-                        //   onTap: () {},
-                        //   child: Row(
-                        //     children: [
-                        //       Text(
-                        //         "See More Detail",
-                        //         style: TextStyle(
-                        //           fontWeight: FontWeight.w600,
-                        //           color: Colors.black,
-                        //         ),
-                        //       ),
-                        //       SizedBox(width: 5),
-                        //       Icon(
-                        //         Icons.arrow_forward_ios,
-                        //         size: 12,
-                        //         color: Colors.black,
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              widget.isSeeMore = !widget.isSeeMore;
+                            });
+                            print(widget.isSeeMore);
+                          },
+                          child: Row(
+                            children: [
+                              Text(
+                                widget.isSeeMore ? "Collapse <" : "See more >",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              SizedBox(width: 5),
+                            ],
+                          ),
+                        ),
                       ),
 //* button add to cart
                       Container(

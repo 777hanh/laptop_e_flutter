@@ -31,7 +31,6 @@ class _CartState extends State<Cart> {
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
     User currentUser = FirebaseAuth.instance.currentUser!;
@@ -87,7 +86,12 @@ class _CartState extends State<Cart> {
         elevation: 0.0,
         leading: IconButton(
           onPressed: () {
-            Navigator.of(context).pop();
+            // Navigator.of(context).pop();
+            Navigator.pop(
+                context,
+                PageTransition(
+                    type: PageTransitionType.leftToRightWithFade,
+                    child: Home()));
           },
           icon: Icon(Icons.arrow_back_ios, color: Colors.black),
         ),
@@ -97,7 +101,9 @@ class _CartState extends State<Cart> {
       ),
 //* Body
       body: Container(
-        margin: EdgeInsets.symmetric(horizontal: 10),
+        margin: EdgeInsets.symmetric(
+          horizontal: 10,
+        ),
         height: MediaQuery.of(context).size.height * (710 / 812),
         child: ListView(
           children: lstCart

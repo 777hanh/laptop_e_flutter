@@ -1,12 +1,16 @@
 import 'package:elaptop/models/cart.dart';
 import 'package:elaptop/models/product.dart';
+import 'package:elaptop/models/user.dart';
 import 'package:elaptop/widgets/mySingleCartproduct.dart';
 import 'package:elaptop/widgets/notification_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class CheckOut extends StatefulWidget {
+  double discount = 10;
+  double shipping = 60000;
   @override
   State<CheckOut> createState() => _CheckOutState();
 }
@@ -73,10 +77,24 @@ class _CheckOutState extends State<CheckOut> {
 
   @override
   Widget build(BuildContext context) {
-    double discount = 10;
-    double shipping = 60000;
+    User? currentUser;
+    try {
+      currentUser = FirebaseAuth.instance.currentUser;
+    } catch (e) {
+      FirebaseAuth.instance.currentUser!.reload();
+      currentUser = FirebaseAuth.instance.currentUser;
+    }
+    List<UserModel> snapShot =
+        Provider.of<List<UserModel>>(context, listen: true);
+    List<UserModel> user = snapShot
+        .where((element) => element.userId == currentUser!.uid)
+        .toList();
+    // print('LOGGER_USERCURRENT: ${user[0].userId}');
+    //filter list cart by current userId
     List<CartModel> lstCart =
-        Provider.of<List<CartModel>>(context, listen: true);
+        Provider.of<List<CartModel>>(context, listen: true)
+            .where((element) => element.idUser == user[0].userId)
+            .toList();
 
     return Scaffold(
       bottomNavigationBar: Container(
@@ -130,13 +148,6 @@ class _CheckOutState extends State<CheckOut> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
-                        Text(
-                          'Checkout',
-                          style: TextStyle(
-                            fontSize: 28,
-                          ),
-                        ),
-                        SizedBox(height: 20),
                         Column(
                           children: lstCart
                               .map((item) => MySingleCartProduct(
@@ -156,13 +167,14 @@ class _CheckOutState extends State<CheckOut> {
                                 total(lstCart),
                               ),
                               _buildBottomDetail(
-                                  'Discount', discount.toString() + '%'),
-                              _buildBottomDetailPrice('Shipping', shipping),
+                                  'Discount', widget.discount.toString() + '%'),
+                              _buildBottomDetailPrice(
+                                  'Shipping', widget.shipping),
                               _buildBottomDetailPrice(
                                   'Total',
                                   total(lstCart) +
-                                      shipping -
-                                      (total(lstCart) * discount / 100)),
+                                      widget.shipping -
+                                      (total(lstCart) * widget.discount / 100)),
                             ],
                           ),
                         ),

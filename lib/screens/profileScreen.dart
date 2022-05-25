@@ -4,7 +4,11 @@ import 'package:elaptop/widgets/myButton.dart';
 import 'package:elaptop/widgets/notification_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'dart:io';
+import 'dart:async';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -17,6 +21,12 @@ bool isMale = true;
 
 class _ProfileState extends State<Profile> {
   bool edit = false;
+  File? _pickedImage;
+  PickedFile? _image;
+  Future<void> getImage() async {
+    _image = (await ImagePicker().getImage(source: ImageSource.camera))!;
+    _pickedImage = File(_image!.path);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +50,12 @@ class _ProfileState extends State<Profile> {
               )
             : IconButton(
                 onPressed: () {
-                  Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (ctx) => Home()));
+                  Navigator.pop(
+                    context,
+                    PageTransition(
+                        type: PageTransitionType.leftToRightWithFade,
+                        child: Home()),
+                  );
                 },
                 icon: Icon(Icons.arrow_back_ios, color: Colors.black),
               ),
@@ -100,13 +114,18 @@ class _ProfileState extends State<Profile> {
                               child: Card(
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(20)),
-                                child: CircleAvatar(
-                                  child: Icon(
-                                    Icons.edit,
-                                    size: 20,
-                                    color: Colors.black,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    getImage();
+                                  },
+                                  child: CircleAvatar(
+                                    child: Icon(
+                                      Icons.camera_alt,
+                                      size: 20,
+                                      color: Colors.black,
+                                    ),
+                                    backgroundColor: Colors.transparent,
                                   ),
-                                  backgroundColor: Colors.transparent,
                                 ),
                               ),
                             )
