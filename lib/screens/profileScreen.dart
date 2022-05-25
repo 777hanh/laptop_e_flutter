@@ -1,7 +1,10 @@
+import 'package:elaptop/models/user.dart';
 import 'package:elaptop/screens/home.dart';
 import 'package:elaptop/widgets/myButton.dart';
 import 'package:elaptop/widgets/notification_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -10,11 +13,19 @@ class Profile extends StatefulWidget {
   State<Profile> createState() => _ProfileState();
 }
 
+bool isMale = true;
+
 class _ProfileState extends State<Profile> {
   bool edit = false;
 
   @override
   Widget build(BuildContext context) {
+    User currentUser = FirebaseAuth.instance.currentUser!;
+    List<UserModel> snapShot =
+        Provider.of<List<UserModel>>(context, listen: true);
+    List<UserModel> user =
+        snapShot.where((element) => element.userId == currentUser.uid).toList();
+
     return Scaffold(
       backgroundColor: Color(0xfff8f8f8),
       appBar: AppBar(
@@ -117,10 +128,51 @@ class _ProfileState extends State<Profile> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
-                                    _buildTextFormField(name: 'demo'),
-                                    _buildTextFormField(name: 'demo@gmail.com'),
-                                    _buildTextFormField(name: 'Male'),
-                                    _buildTextFormField(name: '1234567890'),
+                                    _buildTextFormField(
+                                        name: user.length > 0
+                                            ? user[0].userName
+                                            : ''),
+                                    _buildTextFormField(
+                                        name: user.length > 0
+                                            ? user[0].userEmail
+                                            : ''),
+                                    //*Gender
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          isMale = !isMale;
+                                        });
+                                      },
+                                      child: Container(
+                                        height: 60,
+                                        padding: EdgeInsets.only(left: 10),
+                                        width: double.infinity,
+                                        decoration: BoxDecoration(
+                                            border:
+                                                Border.all(color: Colors.grey),
+                                            borderRadius:
+                                                BorderRadius.circular(20)),
+                                        child: Center(
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                isMale == true
+                                                    ? "Male"
+                                                    : "Female",
+                                                style: TextStyle(
+                                                    color: Colors.black87,
+                                                    fontSize: 18),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    //*
+                                    _buildTextFormField(
+                                        name: user.length > 0
+                                            ? user[0].userPhoneNumber
+                                            : ''),
                                   ],
                                 )
                               : Column(
@@ -128,13 +180,25 @@ class _ProfileState extends State<Profile> {
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
                                     _buildSingleContainer(
-                                        start: 'Name', end: 'demo'),
+                                        start: 'Name',
+                                        end: user.length > 0
+                                            ? user[0].userName
+                                            : ''),
                                     _buildSingleContainer(
-                                        start: 'Email', end: 'demo@gmail.com'),
+                                        start: 'Email',
+                                        end: user.length > 0
+                                            ? user[0].userEmail
+                                            : ''),
                                     _buildSingleContainer(
-                                        start: 'Gender', end: 'Male'),
+                                        start: 'Gender',
+                                        end: user.length > 0
+                                            ? user[0].userGender
+                                            : ''),
                                     _buildSingleContainer(
-                                        start: 'Phone', end: '1234567890'),
+                                        start: 'Phone',
+                                        end: user.length > 0
+                                            ? user[0].userPhoneNumber
+                                            : ''),
                                   ],
                                 ),
                         ),
