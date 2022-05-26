@@ -22,11 +22,13 @@ class User_Provider {
     List<UserModel> newList = [];
     snapshot.docs.forEach((element) {
       UserModel user = UserModel(
-          userId: element['UserId'],
-          userName: element['UserName'],
-          userEmail: element['UserEmail'],
-          userGender: element['UserGender'],
-          userPhoneNumber: element['phone']);
+        userId: element['UserId'],
+        userName: element['UserName'],
+        userEmail: element['UserEmail'],
+        userGender: element['UserGender'],
+        userPhoneNumber: element['phone'],
+        address: element['address'],
+      );
       newList.add(user);
     });
     allUserDataList = newList;

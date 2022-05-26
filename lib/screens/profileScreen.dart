@@ -123,6 +123,7 @@ class _ProfileState extends State<Profile> {
                       onPressed: () {
                         _uploadImage(image: _pickedImage);
                         setState(() {
+                          //todo: save user
                           edit = !edit;
                         });
                       },
@@ -191,24 +192,26 @@ class _ProfileState extends State<Profile> {
                   ),
                   //*
                   Container(
-                    height: 300,
+                    height: 400,
                     width: double.infinity,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
                         //*info here
                         Container(
-                          height: 300,
+                          height: 380,
                           child: edit == true
                               ? Column(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
                                     _buildTextFormField(
+                                        enable: false,
                                         name: user.length > 0
                                             ? user[0].userName
                                             : ''),
                                     _buildTextFormField(
+                                        enable: true,
                                         name: user.length > 0
                                             ? user[0].userEmail
                                             : ''),
@@ -246,6 +249,14 @@ class _ProfileState extends State<Profile> {
                                     ),
                                     //*
                                     _buildTextFormField(
+                                        enable: false,
+                                        name: user.length > 0
+                                            ? user[0].address == ''
+                                                ? 'Input address . . .'
+                                                : user[0].address
+                                            : ''),
+                                    _buildTextFormField(
+                                        enable: false,
                                         name: user.length > 0
                                             ? user[0].userPhoneNumber
                                             : ''),
@@ -264,6 +275,13 @@ class _ProfileState extends State<Profile> {
                                         start: 'Email',
                                         end: user.length > 0
                                             ? user[0].userEmail
+                                            : ''),
+                                    _buildSingleContainer(
+                                        start: 'Address',
+                                        end: user.length > 0
+                                            ? user[0].address == ''
+                                                ? 'Input address . . .'
+                                                : user[0].address
                                             : ''),
                                     _buildSingleContainer(
                                         start: 'Gender',
@@ -302,7 +320,7 @@ class _ProfileState extends State<Profile> {
                         : Container(),
                   ),
                   SizedBox(
-                    height: 1,
+                    height: 30,
                   ),
                 ],
               ),
@@ -336,24 +354,36 @@ class _ProfileState extends State<Profile> {
                 color: Colors.black45,
               ),
             ),
-            Text(
-              end!,
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
+            end == 'Input address . . .'
+                ? Text(
+                    'Input address . . .',
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black26,
+                    ),
+                  )
+                : Text(
+                    end!,
+                    style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
+                  ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTextFormField({String? name}) {
+  Widget _buildTextFormField({String? name, bool? enable}) {
     return TextFormField(
+      readOnly: enable!,
       decoration: InputDecoration(
         hintText: name!,
+        hintStyle: TextStyle(
+            color:
+                name == 'Input address . . .' ? Colors.black26 : Colors.black),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
         ),

@@ -138,7 +138,10 @@ class _CheckOutState extends State<CheckOut> {
         child: ListView(
           children: [
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 25),
+              padding: EdgeInsets.symmetric(
+                  horizontal:
+                      MediaQuery.of(context).size.width * (10.677 / 375),
+                  vertical: 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[

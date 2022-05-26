@@ -53,7 +53,9 @@ class _CartState extends State<Cart> {
         width: 100,
         color: Color.fromARGB(61, 147, 185, 250),
         child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 20),
+          margin: EdgeInsets.symmetric(
+            horizontal: 20,
+          ),
           padding: EdgeInsets.only(bottom: 10, top: 10),
           child: RaisedButton(
             color: Colors.blueAccent,
@@ -107,8 +109,9 @@ class _CartState extends State<Cart> {
         height: MediaQuery.of(context).size.height * (710 / 812),
         child: ListView(
           children: lstCart
-              .map((item) =>
-                  MySingleCartProduct(cart: item, isInCartScreen: true))
+              .map(
+                (item) => MySingleCartProduct(cart: item, isInCartScreen: true),
+              )
               .toList(),
         ),
       ),

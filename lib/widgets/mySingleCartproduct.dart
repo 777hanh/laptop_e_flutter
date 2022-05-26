@@ -52,15 +52,37 @@ class MySingleCartProduct extends StatelessWidget {
               ),
               Container(
                 height: 130,
-                width: 200,
+                width: 230,
                 child: ListTile(
                   title: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        _product[0].title,
-                        maxLines: 2,
+                      Container(
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 160,
+                              child: Text(
+                                _product[0].title,
+                                maxLines: 2,
+                              ),
+                            ),
+                            isInCartScreen == true
+                                ? Container(
+                                    width: 30,
+                                    child: IconButton(
+                                      icon: Icon(Icons.close),
+                                      onPressed: () {
+                                        cartProvider
+                                            .deleteProductCart(cart.id!);
+                                        // print('LOGGER: ${cart.id!}');
+                                      },
+                                    ),
+                                  )
+                                : SizedBox.shrink(),
+                          ],
+                        ),
                       ),
                       Text(
                         // '${price}₫',
@@ -77,7 +99,6 @@ class MySingleCartProduct extends StatelessWidget {
                       Container(
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          color: Color(0xFFF6F7F9),
                           borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(40),
                             topRight: Radius.circular(40),
@@ -96,46 +117,62 @@ class MySingleCartProduct extends StatelessWidget {
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
-                                children: <Widget>[
-                                  GestureDetector(
-                                      child: Icon(
-                                        Icons.remove,
-                                        color: Colors.black,
-                                      ),
-                                      onTap: () {
-                                        if (isInCartScreen == true) {
-                                          if (amount > 1) {
-                                            amount = amount - 1;
+                                children: isInCartScreen == true
+                                    ? <Widget>[
+                                        GestureDetector(
+                                            child: Icon(
+                                              Icons.remove,
+                                              color: Colors.black,
+                                            ),
+                                            onTap: () {
+                                              if (amount > 1) {
+                                                amount = amount - 1;
+                                                cartProvider.updateProductCart(
+                                                    cart.id!, amount);
+                                              } else {
+                                                cartProvider.deleteProductCart(
+                                                    cart.id!);
+                                              }
+                                            }),
+                                        Text(
+                                          amount.toInt().toString(),
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        GestureDetector(
+                                          child: Icon(
+                                            Icons.add,
+                                            color: Colors.black,
+                                          ),
+                                          onTap: () {
+                                            amount = amount + 1;
                                             cartProvider.updateProductCart(
                                                 cart.id!, amount);
-                                          } else {
-                                            cartProvider
-                                                .deleteProductCart(cart.id!);
-                                          }
-                                        } else {}
-                                      }),
-                                  Text(
-                                    amount.toInt().toString(),
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                    child: Icon(
-                                      Icons.add,
-                                      color: Colors.black,
-                                    ),
-                                    onTap: () {
-                                      if (isInCartScreen == true) {
-                                        amount = amount + 1;
-                                        cartProvider.updateProductCart(
-                                            cart.id!, amount);
-                                      } else {}
-                                    },
-                                  ),
-                                ],
+                                          },
+                                        ),
+                                      ]
+                                    : <Widget>[
+                                        Text(
+                                          'Quantity: ',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontFamily: 'Lato',
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                        Text(
+                                          amount.toInt().toString(),
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            color: Colors.black,
+                                            fontFamily: 'Lato',
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
                               ),
                             ),
                           ],
