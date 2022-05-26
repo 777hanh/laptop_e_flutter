@@ -3,6 +3,7 @@ import 'package:elaptop/screens/home.dart';
 import 'package:elaptop/widgets/myButton.dart';
 import 'package:elaptop/widgets/notification_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
@@ -23,9 +24,60 @@ class _ProfileState extends State<Profile> {
   bool edit = false;
   File? _pickedImage;
   PickedFile? _image;
-  Future<void> getImage() async {
-    _image = (await ImagePicker().getImage(source: ImageSource.camera))!;
-    _pickedImage = File(_image!.path);
+  Future<void> getImage({ImageSource? scource}) async {
+    _image = (await ImagePicker().getImage(source: scource!))!;
+    if (_image != null) {
+      _pickedImage = File(_image!.path);
+    }
+  }
+
+  Future<void> myDialogBox() {
+    return showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: [
+                  ListTile(
+                    leading: Icon(
+                      Icons.camera_alt,
+                      color: Colors.black,
+                    ),
+                    title: Text('Pick from camera'),
+                    onTap: () {
+                      getImage(scource: ImageSource.camera);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(
+                      Icons.photo_library,
+                      color: Colors.black,
+                    ),
+                    title: Text('Pick from gallary'),
+                    onTap: () {
+                      getImage(scource: ImageSource.gallery);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+  void _uploadImage({File? image}) async {
+    User user = FirebaseAuth.instance.currentUser!;
+    Reference storageReference = FirebaseStorage.instance
+        .ref()
+        .child("userimage/${user.uid}" + DateTime.now().toString());
+    UploadTask uploadTask = storageReference.putFile(image!);
+    await uploadTask.then((res) {
+      res.ref.getDownloadURL();
+    });
   }
 
   @override
@@ -69,6 +121,7 @@ class _ProfileState extends State<Profile> {
                     IconButton(
                       icon: Icon(Icons.check, size: 30, color: Colors.blue),
                       onPressed: () {
+                        _uploadImage(image: _pickedImage);
                         setState(() {
                           edit = !edit;
                         });
@@ -101,8 +154,10 @@ class _ProfileState extends State<Profile> {
                           children: [
                             CircleAvatar(
                               maxRadius: 65,
-                              backgroundImage:
-                                  AssetImage('assets/userImage.png'),
+                              backgroundImage: _pickedImage == null
+                                  ? AssetImage('assets/userImage.png')
+                                      as ImageProvider
+                                  : FileImage(_pickedImage!),
                             ),
                           ],
                         ),
@@ -116,11 +171,13 @@ class _ProfileState extends State<Profile> {
                                     borderRadius: BorderRadius.circular(20)),
                                 child: GestureDetector(
                                   onTap: () {
-                                    getImage();
+                                    // myDialogBox();
+                                    getImage(scource: ImageSource.gallery);
                                   },
                                   child: CircleAvatar(
                                     child: Icon(
-                                      Icons.camera_alt,
+                                      // Icons.camera_alt,
+                                      Icons.edit,
                                       size: 20,
                                       color: Colors.black,
                                     ),
