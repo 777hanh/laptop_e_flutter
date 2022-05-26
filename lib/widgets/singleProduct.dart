@@ -44,7 +44,6 @@ void CheckIsProductInCart(
     CartProvider cartProvider =
         Provider.of<CartProvider>(context, listen: false);
     cartProvider.addProductCartIsExistInCart(idProduct, quantity);
-    print('Có hàng');
   } else {
     CartProvider cartProvider =
         Provider.of<CartProvider>(context, listen: false);
@@ -292,10 +291,8 @@ class _SingleProductState extends State<SingleProduct> {
                                       backgroundColor: Colors.red,
                                     ),
                                     onPressed: () {
-                                      //Todo:
                                       CheckIsProductInCart(widget.product!.id,
                                           context, lstCart, count.toDouble());
-                                      //Todo
                                       productProvider
                                           .addNotification("Notification");
                                     },

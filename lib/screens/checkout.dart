@@ -1,16 +1,19 @@
 import 'package:elaptop/models/cart.dart';
 import 'package:elaptop/models/product.dart';
 import 'package:elaptop/models/user.dart';
+import 'package:elaptop/screens/cartscreen.dart';
 import 'package:elaptop/widgets/mySingleCartproduct.dart';
 import 'package:elaptop/widgets/notification_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 class CheckOut extends StatefulWidget {
   double discount = 10;
   double shipping = 60000;
+  bool exit = false;
   @override
   State<CheckOut> createState() => _CheckOutState();
 }
@@ -125,9 +128,20 @@ class _CheckOutState extends State<CheckOut> {
         elevation: 0.0,
         leading: IconButton(
           onPressed: () {
-            Navigator.of(context).pop();
+            setState(() {
+              widget.exit = !widget.exit;
+            });
+            Navigator.pop(
+              context,
+              PageTransition(
+                  type: PageTransitionType.rightToLeft, child: Cart()),
+            );
           },
-          icon: Icon(Icons.arrow_back_ios, color: Colors.black),
+          icon: Icon(
+              widget.exit == false
+                  ? Icons.arrow_back_ios
+                  : Icons.arrow_forward_ios,
+              color: Colors.black),
         ),
         actions: <Widget>[
           NotificationButton(),

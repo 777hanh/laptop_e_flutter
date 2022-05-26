@@ -41,12 +41,14 @@ class CartProvider with ChangeNotifier {
   //update product to cart
   Future<void> updateProductCart(String id, double quantity) async {
     getUidAuth();
+    getUserId;
     await cartCollection.doc(id).update({'quantity': quantity});
   }
 
   Future<void> addProductCartIsExistInCart(
       String idProduct, double quantity) async {
     List<CartModel> newListCart = [];
+    getUserId;
     CartModel temp;
     QuerySnapshot cartSnapShot = await FirebaseFirestore.instance
         .collection("cart")

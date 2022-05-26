@@ -338,13 +338,14 @@ class _ProfileState extends State<Profile> {
       ),
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 20),
-        height: 55,
+        height: 65,
         width: double.infinity,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(30),
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
@@ -363,12 +364,15 @@ class _ProfileState extends State<Profile> {
                       color: Colors.black26,
                     ),
                   )
-                : Text(
-                    end!,
-                    style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black),
+                : Expanded(
+                    child: Text(
+                      end!,
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
+                    ),
                   ),
           ],
         ),

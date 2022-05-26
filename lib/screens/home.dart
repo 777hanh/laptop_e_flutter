@@ -1,5 +1,8 @@
 // ignore: import_of_legacy_library_into_null_safe
+import 'dart:convert';
+
 import 'package:carousel_pro/carousel_pro.dart';
+import 'package:image_network/image_network.dart';
 import 'package:elaptop/models/user.dart';
 import 'package:elaptop/provider/productProvider.dart';
 import 'package:elaptop/screens/cartscreen.dart';
@@ -31,6 +34,8 @@ class _HomeState extends State<Home> {
 //*temp - List product
   List<Product> allProducts = [];
   List<Product> popularProducts = [];
+  String imageNetworkTemp =
+      r'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4hBXLI1tGjFgNKdDFogmZi0nlqxXJaFTleQ&usqp=CAU';
 //*temp
 
   bool homeColor = false;
@@ -68,7 +73,10 @@ class _HomeState extends State<Home> {
             ),
             decoration: BoxDecoration(color: Color(0xfff2f2f2)),
             currentAccountPicture: CircleAvatar(
-              backgroundImage: AssetImage('assets/userImage.png'),
+              backgroundImage: user[0].userImage == ''
+                  ? NetworkImage(
+                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4hBXLI1tGjFgNKdDFogmZi0nlqxXJaFTleQ&usqp=CAU')
+                  : AssetImage('assets/userImage.png') as ImageProvider,
             ),
             accountEmail: Text(
               user.length > 0 ? user[0].userEmail : '',

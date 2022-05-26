@@ -70,11 +70,14 @@ class _CartState extends State<Cart> {
               // print('${cartProvider.getUserId}');
               // cartProvider.addProductToCart('kqKUEDDfNzrfxQijOhdc', 1);
               // productProvider.addNotification("Notification");
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (ctx) => CheckOut(),
-                ),
-              );
+              lstCart.length > 0
+                  ? Navigator.push(
+                      context,
+                      PageTransition(
+                          type: PageTransitionType.rightToLeft,
+                          child: CheckOut()),
+                    )
+                  : {};
             },
           ),
         ),
@@ -108,11 +111,28 @@ class _CartState extends State<Cart> {
         ),
         height: MediaQuery.of(context).size.height * (710 / 812),
         child: ListView(
-          children: lstCart
-              .map(
-                (item) => MySingleCartProduct(cart: item, isInCartScreen: true),
-              )
-              .toList(),
+          children: lstCart.length > 0
+              ? lstCart
+                  .map(
+                    (item) =>
+                        MySingleCartProduct(cart: item, isInCartScreen: true),
+                  )
+                  .toList()
+              : <Widget>[
+                  Container(
+                    height: 250,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Empty',
+                          style: TextStyle(color: Colors.black12, fontSize: 60),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  )
+                ],
         ),
       ),
     );
