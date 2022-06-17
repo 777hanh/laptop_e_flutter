@@ -10,7 +10,7 @@ class ProductProvider with ChangeNotifier {
   }
 
   void resetNotification() {
-    print('logger');
+    // print('logger');
     notificationList = [];
   }
 

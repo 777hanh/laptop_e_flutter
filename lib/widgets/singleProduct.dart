@@ -6,6 +6,7 @@ import 'package:elaptop/screens/cartscreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import '../models/product.dart';
 
@@ -144,11 +145,12 @@ class _SingleProductState extends State<SingleProduct> {
                       Padding(
                         padding: EdgeInsets.only(
                           left: MediaQuery.of(context).size.width * (20 / 375),
-                          right: MediaQuery.of(context).size.width * (64 / 375),
+                          right: MediaQuery.of(context).size.width * (20 / 375),
                         ),
                         child: Text(
                           formatString(widget.product!.description),
-                          style: TextStyle(fontFamily: 'Lato', fontSize: 16),
+                          style: TextStyle(fontSize: 16),
+                          textAlign: TextAlign.justify,
                           maxLines: widget.isSeeMore ? 40 : 3,
                         ),
                       ),
@@ -295,6 +297,12 @@ class _SingleProductState extends State<SingleProduct> {
                                           context, lstCart, count.toDouble());
                                       productProvider
                                           .addNotification("Notification");
+                                      Navigator.pushReplacement(
+                                          context,
+                                          PageTransition(
+                                              type: PageTransitionType
+                                                  .leftToRight,
+                                              child: Cart()));
                                     },
                                     child: Text(
                                       'Add To Cart',

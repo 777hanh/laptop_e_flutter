@@ -92,7 +92,7 @@ class _CartState extends State<Cart> {
         leading: IconButton(
           onPressed: () {
             // Navigator.of(context).pop();
-            Navigator.pop(
+            Navigator.pushReplacement(
                 context,
                 PageTransition(
                     type: PageTransitionType.leftToRightWithFade,
@@ -101,7 +101,7 @@ class _CartState extends State<Cart> {
           icon: Icon(Icons.arrow_back_ios, color: Colors.black),
         ),
         actions: <Widget>[
-          NotificationButton(),
+          // NotificationButton(),
         ],
       ),
 //* Body

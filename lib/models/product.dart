@@ -17,6 +17,15 @@ class Product {
   });
 }
 
+Product emptyProduct = Product(
+    id: '',
+    title: '',
+    price: 0,
+    image: '',
+    description: '',
+    isFavourite: false,
+    isPopular: false);
+
 List<Product> demoProduct = [
   Product(
       id: '1',

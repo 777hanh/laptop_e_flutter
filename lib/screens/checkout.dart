@@ -2,6 +2,7 @@ import 'package:elaptop/models/cart.dart';
 import 'package:elaptop/models/product.dart';
 import 'package:elaptop/models/user.dart';
 import 'package:elaptop/screens/cartscreen.dart';
+import 'package:elaptop/screens/thanksScreen.dart';
 import 'package:elaptop/widgets/mySingleCartproduct.dart';
 import 'package:elaptop/widgets/notification_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -115,7 +116,14 @@ class _CheckOutState extends State<CheckOut> {
                     fontFamily: 'Lato',
                     color: Colors.white,
                     fontWeight: FontWeight.bold)),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                PageTransition(
+                    type: PageTransitionType.rightToLeft,
+                    child: ThanksScreen()),
+              );
+            },
           ),
         ),
       ),

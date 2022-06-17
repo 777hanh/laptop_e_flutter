@@ -5,6 +5,7 @@ import 'package:carousel_pro/carousel_pro.dart';
 import 'package:image_network/image_network.dart';
 import 'package:elaptop/models/user.dart';
 import 'package:elaptop/provider/productProvider.dart';
+import 'package:elaptop/provider/products-provider.dart';
 import 'package:elaptop/screens/cartscreen.dart';
 import 'package:elaptop/screens/categories.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
@@ -32,8 +33,11 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 //*temp - List product
+  // List<Product> allProducts = [emptyProduct];
+  // List<Product> popularProducts = [emptyProduct];
   List<Product> allProducts = [];
   List<Product> popularProducts = [];
+  ProductProvider? productProvider;
   String imageNetworkTemp =
       r'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4hBXLI1tGjFgNKdDFogmZi0nlqxXJaFTleQ&usqp=CAU';
 //*temp
@@ -46,11 +50,11 @@ class _HomeState extends State<Home> {
   bool contactColor = false;
 
   Widget _buildMyDrawer() {
-    ProductProvider productProvider = Provider.of<ProductProvider>(context);
+    productProvider = Provider.of<ProductProvider>(context);
 
     User? currentUser;
     try {
-      currentUser = FirebaseAuth.instance.currentUser;
+      currentUser = FirebaseAuth.instance.currentUser!;
     } catch (e) {
       FirebaseAuth.instance.currentUser!.reload();
       currentUser = FirebaseAuth.instance.currentUser;
@@ -60,7 +64,7 @@ class _HomeState extends State<Home> {
     List<UserModel> user = snapShot
         .where((element) => element.userId == currentUser!.uid)
         .toList();
-    // print('LOGGER: ${user.userEmail}');
+    // print('LOGGER: ${user != [] ? user[0].address : ''}');
     return Drawer(
       child: ListView(
         children: <Widget>[
@@ -73,13 +77,18 @@ class _HomeState extends State<Home> {
             ),
             decoration: BoxDecoration(color: Color(0xfff2f2f2)),
             currentAccountPicture: CircleAvatar(
-              backgroundImage: user[0].userImage == ''
+              backgroundImage: user.length > 0 && user[0].userImage == ''
                   ? NetworkImage(
                       'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4hBXLI1tGjFgNKdDFogmZi0nlqxXJaFTleQ&usqp=CAU')
                   : AssetImage('assets/userImage.png') as ImageProvider,
             ),
             accountEmail: Text(
-              user.length > 0 ? user[0].userEmail : '',
+              // ignore: unnecessary_null_comparison
+              user != null
+                  ? user.length > 0
+                      ? user[0].userEmail
+                      : ''
+                  : '',
               style: TextStyle(
                 color: Colors.black,
               ),
@@ -95,6 +104,7 @@ class _HomeState extends State<Home> {
               //   cartColor = false;
               //   categoryColor = false;
               // });
+              widget._key.currentState!.closeDrawer();
             },
             leading: Icon(Icons.home),
             title: Text(
@@ -115,7 +125,8 @@ class _HomeState extends State<Home> {
 
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (ctx) => ListCategories(),
+                  // builder: (ctx) => ListCategories(),
+                  builder: (ctx) => ListBrand(),
                 ),
               );
             },
@@ -135,7 +146,7 @@ class _HomeState extends State<Home> {
                 // homeColor = false;
                 // categoryColor = false;
               });
-              productProvider.resetNotification();
+              productProvider!.resetNotification();
               Navigator.push(
                 context,
                 PageTransition(
@@ -161,8 +172,7 @@ class _HomeState extends State<Home> {
               Navigator.push(
                 context,
                 PageTransition(
-                    type: PageTransitionType.rightToLeftWithFade,
-                    child: Profile()),
+                    type: PageTransitionType.rightToLeft, child: Profile()),
               );
             },
             leading: Icon(Icons.account_circle_rounded),
@@ -215,8 +225,7 @@ class _HomeState extends State<Home> {
               Navigator.pushReplacement(
                 context,
                 PageTransition(
-                    type: PageTransitionType.rightToLeftWithFade,
-                    child: Login()),
+                    type: PageTransitionType.rightToLeft, child: Login()),
               );
             },
             leading: Icon(Icons.exit_to_app_rounded),
@@ -384,8 +393,14 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget _buildProduct(
-      context, List<Product> productsPopular, String title, Widget navigate) {
+  Widget _buildProduct(context, List<Product> productsPopular, String title,
+      Widget navigate, String type) {
+    productsPopular = Provider.of<List<Product>>(context, listen: true);
+    // type == 'popularProduct'
+    //     ? productsPopular =
+    //         productsPopular.where((item) => item.isPopular).toList()
+    //     : productsPopular;
+    // print('logger ==== ${productsPopular}');
     return Container(
       child: Column(
         children: <Widget>[
@@ -430,11 +445,10 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     List<Product> allProductsList =
         Provider.of<List<Product>>(context, listen: true);
-    // CartModel cart = Provider.of<CartModel>(context, listen: true);
     //*set data for all products
-    // print('logger=====: ${allProductsList}');
     allProducts = allProductsList;
     popularProducts = allProductsList.where((item) => item.isPopular).toList();
+
     return Scaffold(
       key: widget._key,
       drawer: _buildMyDrawer(),
@@ -495,7 +509,7 @@ class _HomeState extends State<Home> {
                       ),
                       Container(
                         height: 130,
-                        color: Colors.black,
+                        color: Colors.transparent,
                         child: Carousel(
                           images: [
                             AssetImage('assets/images/banner/banner1.png'),
@@ -531,13 +545,19 @@ class _HomeState extends State<Home> {
                           'Popular Product',
                           ListProduct(
                               snapShot: popularProducts,
-                              name: 'Popular Product')),
+                              name: 'Popular Product'),
+                          'allProduct'),
                       //* product list
                       SizedBox(
                         height: 20,
                       ),
-                      _buildProduct(context, allProducts, 'Products',
-                          ListProduct(snapShot: allProducts, name: 'Products')),
+                      _buildProduct(
+                          context,
+                          // allProductsList,
+                          allProducts,
+                          'Products',
+                          ListProduct(snapShot: allProducts, name: 'Products'),
+                          'popularProduct'),
                       SizedBox(
                         height: 20,
                       ),
