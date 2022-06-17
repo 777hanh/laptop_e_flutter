@@ -78,12 +78,12 @@ class MyApp extends StatelessWidget {
         home: StreamBuilder(
             stream: FirebaseAuth.instance.authStateChanges(),
             builder: (context, snapshot) {
-              // if (snapshot.hasData) {
-              // return SplashScreen(snapshot: snapshot);
-              return Home();
-              // } else {
-              //   return Welcome();
-              // }
+              if (snapshot.hasData) {
+                return SplashScreen(snapshot: snapshot);
+                // return Home();
+              } else {
+                return Welcome();
+              }
             }),
       ),
     );

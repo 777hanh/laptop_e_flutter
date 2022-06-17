@@ -1,6 +1,7 @@
 import 'package:elaptop/models/cart.dart';
 import 'package:elaptop/models/product.dart';
 import 'package:elaptop/models/user.dart';
+import 'package:elaptop/provider/cartProvider.dart';
 import 'package:elaptop/screens/cartscreen.dart';
 import 'package:elaptop/screens/thanksScreen.dart';
 import 'package:elaptop/widgets/mySingleCartproduct.dart';
@@ -33,6 +34,15 @@ class _CheckOutState extends State<CheckOut> {
     }
     // print('logger: ${totalPrice}');
     return totalPrice;
+  }
+
+  completeBuy(List<CartModel> cartlst) {
+    CartProvider? cartProvider =
+        Provider.of<CartProvider>(context, listen: false);
+    for (int i = 0; i < cartlst.length; i++) {
+      cartProvider.completeBuyProductCart(cartlst[i].id!);
+      // print('${cartlst[i].id!}');
+    }
   }
 
   Widget _buildBottomDetailPrice(String startName, double endName) {
@@ -97,7 +107,8 @@ class _CheckOutState extends State<CheckOut> {
     //filter list cart by current userId
     List<CartModel> lstCart =
         Provider.of<List<CartModel>>(context, listen: true)
-            .where((element) => element.idUser == user[0].userId)
+            .where((element) =>
+                element.idUser == user[0].userId && element.isBuy == false)
             .toList();
 
     return Scaffold(
@@ -117,6 +128,7 @@ class _CheckOutState extends State<CheckOut> {
                     color: Colors.white,
                     fontWeight: FontWeight.bold)),
             onPressed: () {
+              completeBuy(lstCart);
               Navigator.push(
                 context,
                 PageTransition(

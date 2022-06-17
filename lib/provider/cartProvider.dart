@@ -3,6 +3,7 @@ import 'package:elaptop/models/cart.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 
 class CartProvider with ChangeNotifier {
   //get user id
@@ -34,7 +35,8 @@ class CartProvider with ChangeNotifier {
       'quantity': quantity,
       'user': getUserId,
       // 'user': 'demouserid',
-      'id': docRef.id.toString()
+      'id': docRef.id.toString(),
+      'isBuy': false
     });
   }
 
@@ -56,11 +58,11 @@ class CartProvider with ChangeNotifier {
         .get();
     cartSnapShot.docs.forEach((element) {
       temp = CartModel(
-        id: element['id'],
-        idUser: element['user'],
-        idProduct: element['idProduct'],
-        quantity: element['quantity'].toDouble(),
-      );
+          id: element['id'],
+          idUser: element['user'],
+          idProduct: element['idProduct'],
+          quantity: element['quantity'].toDouble(),
+          isBuy: false);
       newListCart.add(temp);
     });
 
@@ -71,12 +73,30 @@ class CartProvider with ChangeNotifier {
         .doc(newCart[0].id)
         .update({'quantity': quantity + (newCart[0].quantity!.toDouble())});
 
-    print('LOGGER_USERID: ${getUserId} \n LOGGER_LIST_CART: ${newCart[0].id}');
+    // print('LOGGER_USERID: ${getUserId} \n LOGGER_LIST_CART: ${newCart[0].id}');
   }
 
   //delete product to cart
   Future<void> deleteProductCart(String id) async {
     getUidAuth();
     await cartCollection.doc(id).delete();
+  }
+
+  //complete buy
+  Future<void> completeBuyProductCart(String id) async {
+    DateTime now = new DateTime.now();
+    String formattedDate = DateFormat('dd/MM/yyyy').format(now);
+    String formattedTime = DateFormat('kk:mm:ss').format(now);
+    getUidAuth();
+    getUserId;
+    await cartCollection.doc(id).update(
+        {'dateBuy': formattedDate, 'timeBuy': formattedTime, 'isBuy': true});
+  }
+
+  //complete buy
+  Future<void> reBuyProductCart(String id) async {
+    getUidAuth();
+    getUserId;
+    await cartCollection.doc(id).update({'isBuy': false});
   }
 }

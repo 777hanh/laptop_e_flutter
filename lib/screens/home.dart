@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:carousel_pro/carousel_pro.dart';
+import 'package:elaptop/screens/historyScreen.dart';
 import 'package:image_network/image_network.dart';
 import 'package:elaptop/models/user.dart';
 import 'package:elaptop/provider/productProvider.dart';
@@ -20,6 +21,7 @@ import 'package:elaptop/widgets/myCardProduct.dart';
 import 'package:elaptop/widgets/notification_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import '../models/product.dart';
@@ -156,6 +158,30 @@ class _HomeState extends State<Home> {
             leading: Icon(Icons.shopping_bag_rounded),
             title: Text(
               'Cart',
+              style: TextStyle(fontSize: 18, fontFamily: 'Lato'),
+            ),
+          ),
+          ListTile(
+            selected: cartColor,
+            onTap: () {
+              setState(() {
+                // cartColor = true;
+                // contactColor = false;
+                // aboutColor = false;
+                // homeColor = false;
+                // categoryColor = false;
+              });
+              productProvider!.resetNotification();
+              Navigator.push(
+                context,
+                PageTransition(
+                    type: PageTransitionType.rightToLeft,
+                    child: HistoryScreen()),
+              );
+            },
+            leading: Icon(Icons.access_time_filled_rounded),
+            title: Text(
+              'History',
               style: TextStyle(fontSize: 18, fontFamily: 'Lato'),
             ),
           ),

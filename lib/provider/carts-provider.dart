@@ -24,6 +24,9 @@ class Cart_Provider {
         idUser: element['user'],
         idProduct: element['idProduct'],
         quantity: element['quantity'].toDouble(),
+        isBuy: element['isBuy'],
+        // dateBuy: element['dateBuy'],
+        // timeBuy: element['timeBuy'],
       );
       newList.add(cart);
     });

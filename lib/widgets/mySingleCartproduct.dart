@@ -76,6 +76,7 @@ class MySingleCartProduct extends StatelessWidget {
                                       onPressed: () {
                                         cartProvider
                                             .deleteProductCart(cart.id!);
+                                        // .completeBuyProductCart(cart.id!);
                                         // print('LOGGER: ${cart.id!}');
                                       },
                                     ),

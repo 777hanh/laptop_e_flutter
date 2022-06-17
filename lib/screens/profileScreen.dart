@@ -90,31 +90,78 @@ class _ProfileState extends State<Profile> {
 
     return Scaffold(
       backgroundColor: Color(0xfff8f8f8),
+      // appBar: AppBar(
+      //   leading: edit == true
+      //       ? IconButton(
+      //           icon: Icon(Icons.close, color: Colors.black38, size: 30),
+      //           onPressed: () {
+      //             setState(() {
+      //               edit = !edit;
+      //             });
+      //           },
+      //         )
+      //       : IconButton(
+      //           onPressed: () {
+      //             Navigator.pop(
+      //               context,
+      //               PageTransition(
+      //                   type: PageTransitionType.leftToRightWithFade,
+      //                   child: Home()),
+      //             );
+      //           },
+      //           icon: Icon(Icons.arrow_back_ios, color: Colors.black),
+      //         ),
+      //   backgroundColor: Colors.transparent,
+      //   actions: [
+      //     edit == false
+      //         ? Container()
+      //         : Row(
+      //             children: [
+      //               Text('Save'),
+      //               IconButton(
+      //                 icon: Icon(Icons.check, size: 30, color: Colors.blue),
+      //                 onPressed: () {
+      //                   _uploadImage(image: _pickedImage);
+      //                   setState(() {
+      //                     //todo: save user
+      //                     edit = !edit;
+      //                   });
+      //                 },
+      //               )
+      //             ],
+      //           ),
+      //   ],
+      // ),
       appBar: AppBar(
+        centerTitle: true,
+        title: Text('',
+            style: TextStyle(
+                color: Colors.black, fontSize: 28, fontFamily: 'Lato')),
+        backgroundColor: Colors.transparent,
+        elevation: 0.0,
         leading: edit == true
             ? IconButton(
-                icon: Icon(Icons.close, color: Colors.black38, size: 30),
                 onPressed: () {
                   setState(() {
                     edit = !edit;
                   });
                 },
+                icon: Icon(Icons.close, color: Colors.black38, size: 30),
               )
             : IconButton(
                 onPressed: () {
-                  Navigator.pop(
-                    context,
-                    PageTransition(
-                        type: PageTransitionType.leftToRightWithFade,
-                        child: Home()),
-                  );
+                  // Navigator.of(context).pop();
+                  Navigator.pushReplacement(
+                      context,
+                      PageTransition(
+                          type: PageTransitionType.leftToRightWithFade,
+                          child: Home()));
                 },
                 icon: Icon(Icons.arrow_back_ios, color: Colors.black),
               ),
-        backgroundColor: Colors.white,
         actions: [
           edit == false
-              ? NotificationButton()
+              ? Container()
               : Row(
                   children: [
                     Text('Save'),

@@ -21,7 +21,8 @@ class NotificationButton extends StatelessWidget {
         snapShot.where((element) => element.userId == currentUser.uid).toList();
     List<CartModel> lstCart =
         Provider.of<List<CartModel>>(context, listen: true)
-            .where((element) => element.idUser == user[0].userId)
+            .where((element) =>
+                element.idUser == user[0].userId && element.isBuy == false)
             .toList();
     ProductProvider? productProvider = Provider.of<ProductProvider>(context);
     // int Index = productProvider.getNotificationIndex;
