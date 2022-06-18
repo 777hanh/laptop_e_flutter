@@ -1,11 +1,9 @@
 import 'dart:async';
 // import 'package:elaptop/provider/categoryProvider.dart';
 import 'package:elaptop/screens/home.dart';
-import 'package:elaptop/screens/login.dart';
 import 'package:elaptop/screens/welcome.dart';
 import 'package:loading_animations/loading_animations.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
   final AsyncSnapshot<Object?>? snapshot;
@@ -43,7 +41,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // categoryProvider = Provider.of<CategoryProvider>(context);    
+    // categoryProvider = Provider.of<CategoryProvider>(context);
     return Scaffold(
         backgroundColor: Colors.white,
         body: SafeArea(

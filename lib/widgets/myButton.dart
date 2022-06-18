@@ -6,13 +6,14 @@ class MyButton extends StatelessWidget {
   final Function onPressed;
   final String? name;
   final Color? color;
-  MyButton({this.name, required this.onPressed, this.color});
+  final double? width;
+  MyButton({this.name, required this.onPressed, this.color, this.width});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 45,
-      width: double.infinity,
+      width: width == null ? double.infinity : width,
       child: RaisedButton(
         child: Text(
           name.toString(),

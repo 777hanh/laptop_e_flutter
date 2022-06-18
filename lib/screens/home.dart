@@ -1,6 +1,8 @@
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:carousel_pro/carousel_pro.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:elaptop/screens/aboutUs.dart';
+import 'package:elaptop/screens/contactUs.dart';
 import 'package:elaptop/screens/historyScreen.dart';
 import 'package:elaptop/models/user.dart';
 import 'package:elaptop/provider/productProvider.dart';
@@ -227,13 +229,12 @@ class _HomeState extends State<Home> {
                 ListTile(
                   selected: aboutColor,
                   onTap: () {
-                    // setState(() {
-                    //   aboutColor = true;
-                    //   contactColor = false;
-                    //   homeColor = false;
-                    //   cartColor = false;
-                    //   categoryColor = false;
-                    // });
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                          type: PageTransitionType.rightToLeft,
+                          child: AboutUs()),
+                    );
                   },
                   leading: Icon(Icons.info_rounded),
                   title: Text(
@@ -244,13 +245,12 @@ class _HomeState extends State<Home> {
                 ListTile(
                   selected: contactColor,
                   onTap: () {
-                    // setState(() {
-                    //   contactColor = true;
-                    //   homeColor = false;
-                    //   aboutColor = false;
-                    //   cartColor = false;
-                    //   categoryColor = false;
-                    // });
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                          type: PageTransitionType.rightToLeft,
+                          child: ContactUs()),
+                    );
                   },
                   leading: Icon(Icons.phone),
                   title: Text(
