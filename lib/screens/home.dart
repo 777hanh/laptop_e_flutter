@@ -1,14 +1,10 @@
 // ignore: import_of_legacy_library_into_null_safe
-import 'dart:convert';
-
 import 'package:carousel_pro/carousel_pro.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elaptop/screens/historyScreen.dart';
-import 'package:image_network/image_network.dart';
 import 'package:elaptop/models/user.dart';
 import 'package:elaptop/provider/productProvider.dart';
-import 'package:elaptop/provider/products-provider.dart';
 import 'package:elaptop/screens/cartscreen.dart';
-import 'package:elaptop/screens/categories.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:elaptop/models/cart.dart';
 // import 'package:elaptop/provider/categoryProvider.dart';
@@ -21,7 +17,6 @@ import 'package:elaptop/widgets/myCardProduct.dart';
 import 'package:elaptop/widgets/notification_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import '../models/product.dart';
@@ -35,10 +30,10 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 //*temp - List product
-  // List<Product> allProducts = [emptyProduct];
-  // List<Product> popularProducts = [emptyProduct];
-  List<Product> allProducts = [];
-  List<Product> popularProducts = [];
+  List<Product>? allProducts = [emptyProduct];
+  List<Product>? popularProducts = [emptyProduct];
+  // List<Product>? allProducts;
+  // List<Product>? popularProducts;
   ProductProvider? productProvider;
   String imageNetworkTemp =
       r'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4hBXLI1tGjFgNKdDFogmZi0nlqxXJaFTleQ&usqp=CAU';
@@ -52,8 +47,6 @@ class _HomeState extends State<Home> {
   bool contactColor = false;
 
   Widget _buildMyDrawer() {
-    productProvider = Provider.of<ProductProvider>(context);
-
     User? currentUser;
     try {
       currentUser = FirebaseAuth.instance.currentUser!;
@@ -148,7 +141,7 @@ class _HomeState extends State<Home> {
                 // homeColor = false;
                 // categoryColor = false;
               });
-              productProvider!.resetNotification();
+              // productProvider!.resetNotification();
               Navigator.push(
                 context,
                 PageTransition(
@@ -171,7 +164,7 @@ class _HomeState extends State<Home> {
                 // homeColor = false;
                 // categoryColor = false;
               });
-              productProvider!.resetNotification();
+              // productProvider!.resetNotification();
               Navigator.push(
                 context,
                 PageTransition(
@@ -420,13 +413,9 @@ class _HomeState extends State<Home> {
   }
 
   Widget _buildProduct(context, List<Product> productsPopular, String title,
-      Widget navigate, String type) {
-    productsPopular = Provider.of<List<Product>>(context, listen: true);
-    // type == 'popularProduct'
-    //     ? productsPopular =
-    //         productsPopular.where((item) => item.isPopular).toList()
-    //     : productsPopular;
-    // print('logger ==== ${productsPopular}');
+      String nameNavigate) {
+    // productsPopular = Provider.of<List<Product>>(context, listen: true);
+    // print('PRINT ME: ${productsPopular}');
     return Container(
       child: Column(
         children: <Widget>[
@@ -444,7 +433,8 @@ class _HomeState extends State<Home> {
                   Navigator.of(context).push(PageTransition(
                     type: PageTransitionType.fade,
                     alignment: Alignment.bottomCenter,
-                    child: navigate,
+                    child: ListProduct(
+                        snapShot: productsPopular, name: nameNavigate),
                   ));
                 },
                 child: Text('See all',
@@ -467,135 +457,166 @@ class _HomeState extends State<Home> {
     );
   }
 
+  Stream<QuerySnapshot> _productsStream =
+      FirebaseFirestore.instance.collection('products').snapshots();
+
   @override
   Widget build(BuildContext context) {
-    List<Product> allProductsList =
-        Provider.of<List<Product>>(context, listen: true);
-    //*set data for all products
-    allProducts = allProductsList;
-    popularProducts = allProductsList.where((item) => item.isPopular).toList();
+    //todo test StreamBuilder
 
-    return Scaffold(
-      key: widget._key,
-      drawer: _buildMyDrawer(),
-      appBar: AppBar(
-        title: Text(
-          'Home',
-          style:
-              TextStyle(color: Colors.black, fontSize: 28, fontFamily: 'Lato'),
-        ),
-        centerTitle: true,
-        elevation: 0.0,
-        backgroundColor: Colors.transparent,
-        leading: GestureDetector(
-            onTap: () {
-              widget._key.currentState!.openDrawer();
-            },
-            // child: Container(
-            //     padding: EdgeInsets.only(left: 10),
-            //     child: Image.asset('assets/logo.png')),
-            child: Icon(Icons.menu_rounded, color: Colors.black, size: 35)),
-        actions: <Widget>[NotificationButton()],
-      ),
-      body: Container(
-        margin: EdgeInsets.symmetric(horizontal: 15),
-        height: MediaQuery.of(context).size.height * (710 / 812),
-        width: double.infinity,
-        child: ListView(
-          children: <Widget>[
-            //* search
-            Container(
-              height: 80,
-              width: double.infinity,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextFormField(
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.search),
-                      hintText: "Which laptop do you want to buy ?",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
+    return StreamBuilder<QuerySnapshot>(
+        stream: _productsStream,
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            // return Text('Something went wrong');
+            return Container();
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Container();
+          }
+
+          if (snapshot.data!.docs.length > 0) {
+            this.allProducts = snapshot.data!.docs
+                .map((i) => Product(
+                    image: i['image'],
+                    id: i['id'],
+                    description: i['description'],
+                    price: i['price'].toDouble(),
+                    title: i['name'],
+                    isPopular: i['isPopular'],
+                    idCategory: i['idCategory']))
+                .toList();
+            this.popularProducts =
+                this.allProducts!.where((item) => item.isPopular).toList();
+            // print('logger: ${this.allProducts}');
+            return Scaffold(
+              key: widget._key,
+              drawer: _buildMyDrawer(),
+              appBar: AppBar(
+                title: Text(
+                  'Home',
+                  style: TextStyle(
+                      color: Colors.black, fontSize: 28, fontFamily: 'Lato'),
+                ),
+                centerTitle: true,
+                elevation: 0.0,
+                backgroundColor: Colors.transparent,
+                leading: GestureDetector(
+                    onTap: () {
+                      widget._key.currentState!.openDrawer();
+                    },
+                    // child: Container(
+                    //     padding: EdgeInsets.only(left: 10),
+                    //     child: Image.asset('assets/logo.png')),
+                    child: Icon(Icons.menu_rounded,
+                        color: Colors.black, size: 35)),
+                actions: <Widget>[NotificationButton()],
+              ),
+              body: Container(
+                margin: EdgeInsets.symmetric(horizontal: 15),
+                height: MediaQuery.of(context).size.height * (710 / 812),
+                width: double.infinity,
+                child: ListView(
+                  children: <Widget>[
+                    //* search
+                    Container(
+                      height: 80,
+                      width: double.infinity,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TextFormField(
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(Icons.search),
+                              hintText: "Which laptop do you want to buy ?",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                ],
+                    Container(
+                      width: double.infinity,
+                      child: Column(
+                        children: <Widget>[
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              //* Banner
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Container(
+                                height: 130,
+                                color: Colors.transparent,
+                                child: Carousel(
+                                  images: [
+                                    AssetImage(
+                                        'assets/images/banner/banner1.png'),
+                                    AssetImage(
+                                        'assets/images/banner/banner2.png'),
+                                    AssetImage(
+                                        'assets/images/banner/banner3.png'),
+                                  ],
+                                  dotColor: Colors.white,
+                                  dotIncreasedColor: Colors.blue,
+                                  indicatorBgPadding: 1,
+                                  autoplay: true,
+                                  dotIncreaseSize: 2,
+                                  dotSpacing: 30,
+                                  dotSize: 10,
+                                  dotBgColor: Colors.transparent,
+                                  borderRadius: true,
+                                  radius: Radius.circular(20),
+                                ),
+                              ),
+                              //* brand list
+                              SizedBox(
+                                height: 20,
+                              ),
+                              _buildBrand(
+                                context,
+                              ),
+                              //* popular product list
+                              SizedBox(
+                                height: 20,
+                              ),
+                              _buildProduct(
+                                context,
+                                this.popularProducts!,
+                                'Popular Product',
+                                'Popular Product',
+                              ),
+                              //* product list
+                              SizedBox(
+                                height: 20,
+                              ),
+                              _buildProduct(
+                                context,
+                                // allProductsList,
+                                this.allProducts!,
+                                'Products',
+                                'Products',
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Container(
-              width: double.infinity,
-              child: Column(
-                children: <Widget>[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      //* Banner
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Container(
-                        height: 130,
-                        color: Colors.transparent,
-                        child: Carousel(
-                          images: [
-                            AssetImage('assets/images/banner/banner1.png'),
-                            AssetImage('assets/images/banner/banner2.png'),
-                            AssetImage('assets/images/banner/banner3.png'),
-                          ],
-                          dotColor: Colors.white,
-                          dotIncreasedColor: Colors.blue,
-                          indicatorBgPadding: 1,
-                          autoplay: true,
-                          dotIncreaseSize: 2,
-                          dotSpacing: 30,
-                          dotSize: 10,
-                          dotBgColor: Colors.transparent,
-                          borderRadius: true,
-                          radius: Radius.circular(20),
-                        ),
-                      ),
-                      //* brand list
-                      SizedBox(
-                        height: 20,
-                      ),
-                      _buildBrand(
-                        context,
-                      ),
-                      //* popular product list
-                      SizedBox(
-                        height: 20,
-                      ),
-                      _buildProduct(
-                          context,
-                          popularProducts,
-                          'Popular Product',
-                          ListProduct(
-                              snapShot: popularProducts,
-                              name: 'Popular Product'),
-                          'allProduct'),
-                      //* product list
-                      SizedBox(
-                        height: 20,
-                      ),
-                      _buildProduct(
-                          context,
-                          // allProductsList,
-                          allProducts,
-                          'Products',
-                          ListProduct(snapShot: allProducts, name: 'Products'),
-                          'popularProduct'),
-                      SizedBox(
-                        height: 20,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+            );
+          } else {
+            return LinearProgressIndicator();
+          }
+        });
   }
 
   // Widget _buildBody() {

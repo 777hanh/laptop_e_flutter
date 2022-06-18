@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elaptop/screens/home.dart';
 import 'package:elaptop/widgets/myCardProduct.dart';
 import 'package:elaptop/widgets/notification_button.dart';
@@ -14,72 +15,104 @@ class ListProduct extends StatelessWidget {
   List<Product> demoProductItems = demoProduct;
 
   Widget getProducWidget(context) {
-//* Slelect data of List Product
-    switch (name) {
-      case 'Acer':
-        snapShot = Provider.of<List<Product>>(context, listen: true)
-            .where((item) => item.idCategory == 1)
-            .toList();
-        break;
-      case 'Asus':
-        snapShot = Provider.of<List<Product>>(context, listen: true)
-            .where((item) => item.idCategory == 2)
-            .toList();
-        break;
-      case 'Dell':
-        snapShot = Provider.of<List<Product>>(context, listen: true)
-            .where((item) => item.idCategory == 3)
-            .toList();
-        break;
-      case 'HP':
-        snapShot = Provider.of<List<Product>>(context, listen: true)
-            .where((item) => item.idCategory == 4)
-            .toList();
-        break;
-      case 'Lenovo':
-        snapShot = Provider.of<List<Product>>(context, listen: true)
-            .where((item) => item.idCategory == 5)
-            .toList();
-        break;
-      case 'Mac':
-        snapShot = Provider.of<List<Product>>(context, listen: true)
-            .where((item) => item.idCategory == 6)
-            .toList();
-        break;
-      case 'Microsoft':
-        snapShot = Provider.of<List<Product>>(context, listen: true)
-            .where((item) => item.idCategory == 7)
-            .toList();
-        break;
-      case 'Samsung':
-        snapShot = Provider.of<List<Product>>(context, listen: true)
-            .where((item) => item.idCategory == 8)
-            .toList();
-        break;
-      case 'Popular Product':
-        snapShot = Provider.of<List<Product>>(context, listen: true)
-            .where((element) => element.isPopular)
-            .toList();
-        break;
-      default:
-        snapShot = Provider.of<List<Product>>(context, listen: true);
-    }
-    return new Container(
-      height: MediaQuery.of(context).size.height * (660 / 812),
-      child: GridView.count(
-          childAspectRatio: 0.72,
-          crossAxisCount: 2,
-          children: snapShot!
-              .map(
-                (item) => new MyCardProduct(
-                  name: item.title,
-                  price: item.price,
-                  image: item.image,
-                  product: item,
-                ),
-              )
-              .toList()),
-    );
+    Stream<QuerySnapshot> _productsStream = FirebaseFirestore.instance
+        .collection('products')
+        .orderBy('name', descending: false)
+        .snapshots();
+
+    return StreamBuilder<QuerySnapshot>(
+        stream: _productsStream,
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            // return Text('Something went wrong');
+            return Container();
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return LinearProgressIndicator();
+          }
+
+          if (snapshot.data!.docs.length > 0) {
+            this.snapShot = snapshot.data!.docs
+                .map((i) => Product(
+                    image: i['image'],
+                    id: i['id'],
+                    description: i['description'],
+                    price: i['price'].toDouble(),
+                    title: i['name'],
+                    isPopular: i['isPopular'],
+                    idCategory: i['idCategory']))
+                .toList();
+            //* Slelect data of List Product
+            switch (name) {
+              case 'Acer':
+                snapShot = snapShot!
+                    .where((element) => element.idCategory == 1)
+                    .toList();
+                break;
+              case 'Asus':
+                snapShot = snapShot!
+                    .where((element) => element.idCategory == 2)
+                    .toList();
+                break;
+              case 'Dell':
+                snapShot = snapShot!
+                    .where((element) => element.idCategory == 3)
+                    .toList();
+                break;
+              case 'HP':
+                snapShot = snapShot!
+                    .where((element) => element.idCategory == 4)
+                    .toList();
+                break;
+              case 'Lenovo':
+                snapShot = snapShot!
+                    .where((element) => element.idCategory == 5)
+                    .toList();
+                break;
+              case 'Mac':
+                snapShot = snapShot!
+                    .where((element) => element.idCategory == 6)
+                    .toList();
+                break;
+              case 'Microsoft':
+                snapShot = snapShot!
+                    .where((element) => element.idCategory == 7)
+                    .toList();
+                break;
+              case 'Samsung':
+                snapShot = snapShot!
+                    .where((element) => element.idCategory == 8)
+                    .toList();
+                break;
+              case 'Popular Product':
+                snapShot =
+                    snapShot!.where((element) => element.isPopular).toList();
+                break;
+              default:
+                snapShot;
+            }
+            // print('print-me: ${snapShot}');
+            return new Container(
+              height: MediaQuery.of(context).size.height * (660 / 812),
+              child: GridView.count(
+                  childAspectRatio: 0.72,
+                  crossAxisCount: 2,
+                  children: snapShot!
+                      .map(
+                        (item) => new MyCardProduct(
+                          name: item.title,
+                          price: item.price,
+                          image: item.image,
+                          product: item,
+                        ),
+                      )
+                      .toList()),
+            );
+          } else {
+            return LinearProgressIndicator();
+          }
+        });
   }
 
   @override
@@ -98,11 +131,6 @@ class ListProduct extends StatelessWidget {
           leading: IconButton(
             icon: Icon(Icons.arrow_back_ios, color: Colors.black),
             onPressed: () {
-              // Navigator.of(context).pushReplacement(PageTransition(
-              //   type: PageTransitionType.fade,
-              //   alignment: Alignment.bottomCenter,
-              //   child: Home(),
-              // ));
               Navigator.of(context).pop();
             },
           ),

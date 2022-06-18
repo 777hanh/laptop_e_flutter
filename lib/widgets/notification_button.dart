@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elaptop/provider/productProvider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -14,25 +15,41 @@ class NotificationButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    User currentUser = FirebaseAuth.instance.currentUser!;
-    List<UserModel> snapShot =
-        Provider.of<List<UserModel>>(context, listen: true);
-    List<UserModel> user =
-        snapShot.where((element) => element.userId == currentUser.uid).toList();
-    List<CartModel> lstCart =
-        Provider.of<List<CartModel>>(context, listen: true)
-            .where((element) =>
-                element.idUser == user[0].userId && element.isBuy == false)
+    User? currentUser = FirebaseAuth.instance.currentUser;
+    Stream<QuerySnapshot> _productsStream =
+        FirebaseFirestore.instance.collection('cart').snapshots();
+    // int Index = lstCart.length;
+    return StreamBuilder<QuerySnapshot>(
+      stream: _productsStream,
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return Container();
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Container();
+        }
+
+        List<CartModel>? snapShot;
+        snapShot = snapshot.data!.docs
+            .map((i) => CartModel(
+                  id: i['id'],
+                  idUser: i['user'],
+                  idProduct: i['idProduct'],
+                  quantity: i['quantity'].toDouble(),
+                  isBuy: i['isBuy'],
+                ))
             .toList();
-    ProductProvider? productProvider = Provider.of<ProductProvider>(context);
-    // int Index = productProvider.getNotificationIndex;
-    int Index = lstCart.length;
-    return Index > 0
-        ? Badge(
+        snapShot = snapShot
+            .where((i) => i.idUser == currentUser?.uid && i.isBuy == false)
+            .toList();
+
+        if (snapShot.length > 0) {
+          return Badge(
             position: BadgePosition(end: 3, top: 8),
             badgeContent: Text(
               // productProvider.getNotificationIndex.toString(),
-              Index.toString(),
+              snapShot.length.toString(),
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -47,10 +64,12 @@ class NotificationButton extends StatelessWidget {
                     PageTransition(
                         type: PageTransitionType.rightToLeftWithFade,
                         child: Cart()));
-                productProvider.resetNotification();
+                // productProvider.resetNotification();
               },
-            ))
-        : IconButton(
+            ),
+          );
+        } else {
+          return IconButton(
             icon: Icon(Icons.shopping_bag_rounded, color: Colors.black),
             onPressed: () {
               Navigator.pushReplacement(
@@ -60,5 +79,8 @@ class NotificationButton extends StatelessWidget {
                       child: Cart()));
             },
           );
+        }
+      },
+    );
   }
 }

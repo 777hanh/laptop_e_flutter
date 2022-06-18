@@ -171,6 +171,11 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+    // User? currentUser = FirebaseAuth.instance.currentUser;
+    // if (currentUser != null) {
+    //   FirebaseAuth.instance.signOut();
+    // }
+
     return Scaffold(
       key: _scaffoldKey,
       resizeToAvoidBottomInset: false,

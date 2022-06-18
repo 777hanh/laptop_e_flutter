@@ -26,14 +26,15 @@ class CartProvider with ChangeNotifier {
   final CollectionReference cartCollection =
       FirebaseFirestore.instance.collection('cart');
   //add product to cart
-  Future<void> addProductToCart(String idProduct, double quantity) async {
+  Future<void> addProductToCart(
+      String idProduct, double quantity, String currentUser) async {
     final docRef = FirebaseFirestore.instance.collection('cart').doc();
     getUidAuth();
     print('logger2: ${docRef.id}');
     await docRef.set({
       'idProduct': idProduct,
       'quantity': quantity,
-      'user': getUserId,
+      'user': currentUser,
       // 'user': 'demouserid',
       'id': docRef.id.toString(),
       'isBuy': false
@@ -48,13 +49,13 @@ class CartProvider with ChangeNotifier {
   }
 
   Future<void> addProductCartIsExistInCart(
-      String idProduct, double quantity) async {
+      String idProduct, double quantity, String currentUser) async {
     List<CartModel> newListCart = [];
     getUserId;
     CartModel temp;
     QuerySnapshot cartSnapShot = await FirebaseFirestore.instance
         .collection("cart")
-        .where('user', isEqualTo: getUserId)
+        .where('user', isEqualTo: currentUser)
         .get();
     cartSnapShot.docs.forEach((element) {
       temp = CartModel(
