@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elaptop/models/user.dart';
 import 'package:elaptop/screens/home.dart';
 import 'package:elaptop/widgets/myButton.dart';
@@ -24,6 +25,7 @@ class _ProfileState extends State<Profile> {
   bool edit = false;
   File? _pickedImage;
   PickedFile? _image;
+  User currentUser = FirebaseAuth.instance.currentUser!;
   Future<void> getImage({ImageSource? scource}) async {
     _image = (await ImagePicker().getImage(source: scource!))!;
     if (_image != null) {
@@ -85,297 +87,298 @@ class _ProfileState extends State<Profile> {
     User currentUser = FirebaseAuth.instance.currentUser!;
     List<UserModel> snapShot =
         Provider.of<List<UserModel>>(context, listen: true);
+    //
     List<UserModel> user =
         snapShot.where((element) => element.userId == currentUser.uid).toList();
+    //
+    Stream<QuerySnapshot> _userStream =
+        FirebaseFirestore.instance.collection('User').snapshots();
+    //todo
+    return StreamBuilder<QuerySnapshot>(
+        stream: _userStream,
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return Container();
+          }
+          List<UserModel>? snapShot;
+          snapShot = snapshot.data?.docs
+              .map((i) => UserModel(
+                    userId: i['UserId'],
+                    userName: i['UserName'],
+                    userEmail: i['UserEmail'],
+                    userGender: i['UserGender'],
+                    userPhoneNumber: i['phone'],
+                    address: i['address'],
+                    userImage: i['userImage'],
+                  ))
+              .toList();
 
-    return Scaffold(
-      backgroundColor: Color(0xfff8f8f8),
-      // appBar: AppBar(
-      //   leading: edit == true
-      //       ? IconButton(
-      //           icon: Icon(Icons.close, color: Colors.black38, size: 30),
-      //           onPressed: () {
-      //             setState(() {
-      //               edit = !edit;
-      //             });
-      //           },
-      //         )
-      //       : IconButton(
-      //           onPressed: () {
-      //             Navigator.pop(
-      //               context,
-      //               PageTransition(
-      //                   type: PageTransitionType.leftToRightWithFade,
-      //                   child: Home()),
-      //             );
-      //           },
-      //           icon: Icon(Icons.arrow_back_ios, color: Colors.black),
-      //         ),
-      //   backgroundColor: Colors.transparent,
-      //   actions: [
-      //     edit == false
-      //         ? Container()
-      //         : Row(
-      //             children: [
-      //               Text('Save'),
-      //               IconButton(
-      //                 icon: Icon(Icons.check, size: 30, color: Colors.blue),
-      //                 onPressed: () {
-      //                   _uploadImage(image: _pickedImage);
-      //                   setState(() {
-      //                     //todo: save user
-      //                     edit = !edit;
-      //                   });
-      //                 },
-      //               )
-      //             ],
-      //           ),
-      //   ],
-      // ),
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text('',
-            style: TextStyle(
-                color: Colors.black, fontSize: 28, fontFamily: 'Lato')),
-        backgroundColor: Colors.transparent,
-        elevation: 0.0,
-        leading: edit == true
-            ? IconButton(
-                onPressed: () {
-                  setState(() {
-                    edit = !edit;
-                  });
-                },
-                icon: Icon(Icons.close, color: Colors.black38, size: 30),
-              )
-            : IconButton(
-                onPressed: () {
-                  // Navigator.of(context).pop();
-                  Navigator.pushReplacement(
-                      context,
-                      PageTransition(
-                          type: PageTransitionType.leftToRightWithFade,
-                          child: Home()));
-                },
-                icon: Icon(Icons.arrow_back_ios, color: Colors.black),
-              ),
-        actions: [
-          edit == false
-              ? Container()
-              : Row(
-                  children: [
-                    Text('Save'),
-                    IconButton(
-                      icon: Icon(Icons.check, size: 30, color: Colors.blue),
-                      onPressed: () {
-                        _uploadImage(image: _pickedImage);
-                        setState(() {
-                          //todo: save user
-                          edit = !edit;
-                        });
-                      },
-                    )
-                  ],
-                ),
-        ],
-      ),
-      body: SafeArea(
-        child: ListView(
-          children: [
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 15),
-              height: MediaQuery.of(context).size.height * (710 / 812),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(
-                    height: 15,
-                  ),
-                  //*image info
-                  Stack(
-                    children: [
-                      Container(
-                        height: 130,
-                        width: double.infinity,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
+          snapShot = snapShot != null
+              ? snapShot.where((i) => i.userId == currentUser.uid).toList()
+              : snapShot;
+          if (snapShot != null) {
+            user = snapShot;
+          }
+
+          if ((snapshot.data?.docs.length ?? 0) > 0 && snapShot != null) {
+            return Scaffold(
+              backgroundColor: Color(0xfff8f8f8),
+              appBar: AppBar(
+                centerTitle: true,
+                title: Text('',
+                    style: TextStyle(
+                        color: Colors.black, fontSize: 28, fontFamily: 'Lato')),
+                backgroundColor: Colors.transparent,
+                elevation: 0.0,
+                leading: edit == true
+                    ? IconButton(
+                        onPressed: () {
+                          setState(() {
+                            edit = !edit;
+                          });
+                        },
+                        icon:
+                            Icon(Icons.close, color: Colors.black38, size: 30),
+                      )
+                    : IconButton(
+                        onPressed: () {
+                          // Navigator.of(context).pop();
+                          Navigator.pushReplacement(
+                              context,
+                              PageTransition(
+                                  type: PageTransitionType.leftToRightWithFade,
+                                  child: Home()));
+                        },
+                        icon: Icon(Icons.arrow_back_ios, color: Colors.black),
+                      ),
+                actions: [
+                  edit == false
+                      ? Container()
+                      : Row(
                           children: [
-                            CircleAvatar(
-                              maxRadius: 65,
-                              backgroundImage: _pickedImage == null
-                                  ? AssetImage('assets/userImage.png')
-                                      as ImageProvider
-                                  : FileImage(_pickedImage!),
-                            ),
+                            Text('Save'),
+                            IconButton(
+                              icon: Icon(Icons.check,
+                                  size: 30, color: Colors.blue),
+                              onPressed: () {
+                                _uploadImage(image: _pickedImage);
+                                setState(() {
+                                  //todo: save user
+                                  edit = !edit;
+                                });
+                              },
+                            )
                           ],
                         ),
-                      ),
-                      edit == true
-                          ? Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 215, top: 80),
-                              child: Card(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    // myDialogBox();
-                                    getImage(scource: ImageSource.gallery);
-                                  },
-                                  child: CircleAvatar(
-                                    child: Icon(
-                                      // Icons.camera_alt,
-                                      Icons.edit,
-                                      size: 20,
-                                      color: Colors.black,
+                ],
+              ),
+              body: SafeArea(
+                child: ListView(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 15),
+                      height: MediaQuery.of(context).size.height * (710 / 812),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(
+                            height: 15,
+                          ),
+                          //*image info
+                          Stack(
+                            children: [
+                              Container(
+                                height: 130,
+                                width: double.infinity,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    CircleAvatar(
+                                      maxRadius: 65,
+                                      backgroundImage: _pickedImage == null
+                                          ? AssetImage('assets/userImage.png')
+                                              as ImageProvider
+                                          : FileImage(_pickedImage!),
                                     ),
-                                    backgroundColor: Colors.transparent,
-                                  ),
+                                  ],
                                 ),
                               ),
-                            )
-                          : Container(),
-                    ],
-                  ),
-                  //*
-                  Container(
-                    height: 400,
-                    width: double.infinity,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        //*info here
-                        Container(
-                          height: 380,
-                          child: edit == true
-                              ? Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    _buildTextFormField(
-                                        enable: false,
-                                        name: user.length > 0
-                                            ? user[0].userName
-                                            : ''),
-                                    _buildTextFormField(
-                                        enable: true,
-                                        name: user.length > 0
-                                            ? user[0].userEmail
-                                            : ''),
-                                    //*Gender
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          isMale = !isMale;
-                                        });
-                                      },
-                                      child: Container(
-                                        height: 60,
-                                        padding: EdgeInsets.only(left: 10),
-                                        width: double.infinity,
-                                        decoration: BoxDecoration(
-                                            border:
-                                                Border.all(color: Colors.grey),
+                              edit == true
+                                  ? Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 215, top: 80),
+                                      child: Card(
+                                        shape: RoundedRectangleBorder(
                                             borderRadius:
                                                 BorderRadius.circular(20)),
-                                        child: Center(
-                                          child: Row(
-                                            children: [
-                                              Text(
-                                                isMale == true
-                                                    ? "Male"
-                                                    : "Female",
-                                                style: TextStyle(
-                                                    color: Colors.black87,
-                                                    fontSize: 18),
-                                              ),
-                                            ],
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            // myDialogBox();
+                                            getImage(
+                                                scource: ImageSource.gallery);
+                                          },
+                                          child: CircleAvatar(
+                                            child: Icon(
+                                              // Icons.camera_alt,
+                                              Icons.edit,
+                                              size: 20,
+                                              color: Colors.black,
+                                            ),
+                                            backgroundColor: Colors.transparent,
                                           ),
                                         ),
                                       ),
-                                    ),
-                                    //*
-                                    _buildTextFormField(
-                                        enable: false,
-                                        name: user.length > 0
-                                            ? user[0].address == ''
-                                                ? 'Input address . . .'
-                                                : user[0].address
-                                            : ''),
-                                    _buildTextFormField(
-                                        enable: false,
-                                        name: user.length > 0
-                                            ? user[0].userPhoneNumber
-                                            : ''),
-                                  ],
-                                )
-                              : Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    _buildSingleContainer(
-                                        start: 'Name',
-                                        end: user.length > 0
-                                            ? user[0].userName
-                                            : ''),
-                                    _buildSingleContainer(
-                                        start: 'Email',
-                                        end: user.length > 0
-                                            ? user[0].userEmail
-                                            : ''),
-                                    _buildSingleContainer(
-                                        start: 'Address',
-                                        end: user.length > 0
-                                            ? user[0].address == ''
-                                                ? 'Input address . . .'
-                                                : user[0].address
-                                            : ''),
-                                    _buildSingleContainer(
-                                        start: 'Gender',
-                                        end: user.length > 0
-                                            ? user[0].userGender
-                                            : ''),
-                                    _buildSingleContainer(
-                                        start: 'Phone',
-                                        end: user.length > 0
-                                            ? user[0].userPhoneNumber
-                                            : ''),
-                                  ],
+                                    )
+                                  : Container(),
+                            ],
+                          ),
+                          //*
+                          Container(
+                            height: 400,
+                            width: double.infinity,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                //*info here
+                                Container(
+                                  height: 380,
+                                  child: edit == true
+                                      ? Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            _buildTextFormField(
+                                                enable: false,
+                                                name: user.length > 0
+                                                    ? user[0].userName
+                                                    : ''),
+                                            _buildTextFormField(
+                                                enable: true,
+                                                name: user.length > 0
+                                                    ? user[0].userEmail
+                                                    : ''),
+                                            //*Gender
+                                            GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  isMale = !isMale;
+                                                });
+                                              },
+                                              child: Container(
+                                                height: 60,
+                                                padding:
+                                                    EdgeInsets.only(left: 10),
+                                                width: double.infinity,
+                                                decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                        color: Colors.grey),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20)),
+                                                child: Center(
+                                                  child: Row(
+                                                    children: [
+                                                      Text(
+                                                        isMale == true
+                                                            ? "Male"
+                                                            : "Female",
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.black87,
+                                                            fontSize: 18),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            //*
+                                            _buildTextFormField(
+                                                enable: false,
+                                                name: user.length > 0
+                                                    ? user[0].address == ''
+                                                        ? 'Input address . . .'
+                                                        : user[0].address
+                                                    : ''),
+                                            _buildTextFormField(
+                                                enable: false,
+                                                name: user.length > 0
+                                                    ? user[0].userPhoneNumber
+                                                    : ''),
+                                          ],
+                                        )
+                                      : Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            _buildSingleContainer(
+                                                start: 'Name',
+                                                end: user.length > 0
+                                                    ? user[0].userName
+                                                    : ''),
+                                            _buildSingleContainer(
+                                                start: 'Email',
+                                                end: user.length > 0
+                                                    ? user[0].userEmail
+                                                    : ''),
+                                            _buildSingleContainer(
+                                                start: 'Address',
+                                                end: user.length > 0
+                                                    ? user[0].address == ''
+                                                        ? 'Input address . . .'
+                                                        : user[0].address
+                                                    : ''),
+                                            _buildSingleContainer(
+                                                start: 'Gender',
+                                                end: user.length > 0
+                                                    ? user[0].userGender
+                                                    : ''),
+                                            _buildSingleContainer(
+                                                start: 'Phone',
+                                                end: user.length > 0
+                                                    ? user[0].userPhoneNumber
+                                                    : ''),
+                                          ],
+                                        ),
                                 ),
-                        ),
-                        //*
-                      ],
+                                //*
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 25,
+                          ),
+                          Container(
+                            width: 200,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: edit == false
+                                ? MyButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        this.edit = !this.edit;
+                                      });
+                                    },
+                                    name: 'Edit Profile',
+                                  )
+                                : Container(),
+                          ),
+                          SizedBox(
+                            height: 30,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 25,
-                  ),
-                  Container(
-                    width: 200,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: edit == false
-                        ? MyButton(
-                            onPressed: () {
-                              setState(() {
-                                this.edit = !this.edit;
-                              });
-                            },
-                            name: 'Edit Profile',
-                          )
-                        : Container(),
-                  ),
-                  SizedBox(
-                    height: 30,
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
+            );
+          } else {
+            return LinearProgressIndicator();
+          }
+        });
+    //todo
   }
 
   Widget _buildSingleContainer({String? start, String? end}) {
@@ -431,6 +434,8 @@ class _ProfileState extends State<Profile> {
     return TextFormField(
       readOnly: enable!,
       decoration: InputDecoration(
+        filled: true,
+        fillColor: enable ? Color(0xCCCCCCCC) : Color(0xffff),
         hintText: name!,
         hintStyle: TextStyle(
             color:

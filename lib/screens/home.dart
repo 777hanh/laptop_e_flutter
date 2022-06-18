@@ -35,8 +35,6 @@ class _HomeState extends State<Home> {
   // List<Product>? allProducts;
   // List<Product>? popularProducts;
   ProductProvider? productProvider;
-  String imageNetworkTemp =
-      r'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4hBXLI1tGjFgNKdDFogmZi0nlqxXJaFTleQ&usqp=CAU';
 //*temp
 
   bool homeColor = false;
@@ -50,8 +48,6 @@ class _HomeState extends State<Home> {
   Widget _buildMyDrawer() {
     List<UserModel> snapShot =
         Provider.of<List<UserModel>>(context, listen: true);
-    // List<UserModel> user =
-    //     snapShot.where((element) => element.userId == currentUser.uid).toList();
     //todo
     Stream<QuerySnapshot> _userStream =
         FirebaseFirestore.instance.collection('User').snapshots();
@@ -71,6 +67,7 @@ class _HomeState extends State<Home> {
                   userGender: i['UserGender'],
                   userPhoneNumber: i['phone'],
                   address: i['address'],
+                  userImage: i['userImage'],
                 ))
             .toList();
 
@@ -79,6 +76,7 @@ class _HomeState extends State<Home> {
             : snapShot;
 
         if ((snapshot.data?.docs.length ?? 0) > 0 && snapShot != null) {
+          // print('LOGGER UID CURRENTUSER: ${snapShot[0].userImage}');
           return Drawer(
             child: ListView(
               children: <Widget>[
@@ -92,9 +90,10 @@ class _HomeState extends State<Home> {
                   decoration: BoxDecoration(color: Color(0xfff2f2f2)),
                   currentAccountPicture: CircleAvatar(
                     backgroundImage: snapShot.length > 0 &&
-                            snapShot[0].userImage == ''
+                            snapShot[0].userImage != ''
                         ? NetworkImage(
-                            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4hBXLI1tGjFgNKdDFogmZi0nlqxXJaFTleQ&usqp=CAU')
+                            // 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4hBXLI1tGjFgNKdDFogmZi0nlqxXJaFTleQ&usqp=CAU')
+                            '${snapShot[0].userImage}')
                         : AssetImage('assets/userImage.png') as ImageProvider,
                   ),
                   accountEmail: Text(
@@ -280,12 +279,9 @@ class _HomeState extends State<Home> {
         } else {
           return LinearProgressIndicator();
         }
-        return Drawer(child: Text(snapShot![0].userEmail));
+        // return Drawer(child: Text(snapShot![0].userEmail));
       },
     );
-    //todo
-
-    print('LOGGER UID CURRENTUSER: ${this.currentUser.uid}');
   }
 
   Widget _buildProductPopular(List<Product> products) {

@@ -28,6 +28,7 @@ class User_Provider {
         userGender: element['UserGender'],
         userPhoneNumber: element['phone'],
         address: element['address'],
+        userImage: element['address'],
       );
       newList.add(user);
     });

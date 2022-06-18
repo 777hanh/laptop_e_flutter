@@ -82,7 +82,8 @@ class _SignUpState extends State<SignUp> {
           "UserEmail": email,
           "UserGender": isMale == true ? "Male" : "Female",
           "phone": phone,
-          "address": ""
+          "address": "",
+          "userImage": ""
         });
         handRedirect();
       } on FirebaseAuthException catch (err) {
