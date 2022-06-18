@@ -45,217 +45,247 @@ class _HomeState extends State<Home> {
 
   bool aboutColor = false;
   bool contactColor = false;
+  User currentUser = FirebaseAuth.instance.currentUser!;
 
   Widget _buildMyDrawer() {
-    User? currentUser;
-    try {
-      currentUser = FirebaseAuth.instance.currentUser!;
-    } catch (e) {
-      FirebaseAuth.instance.currentUser!.reload();
-      currentUser = FirebaseAuth.instance.currentUser;
-    }
     List<UserModel> snapShot =
         Provider.of<List<UserModel>>(context, listen: true);
-    List<UserModel> user = snapShot
-        .where((element) => element.userId == currentUser!.uid)
-        .toList();
-    // print('LOGGER: ${user != [] ? user[0].address : ''}');
-    return Drawer(
-      child: ListView(
-        children: <Widget>[
-          UserAccountsDrawerHeader(
-            accountName: Text(
-              user.length > 0 ? user[0].userName : '',
-              style: TextStyle(
-                color: Colors.black,
-              ),
-            ),
-            decoration: BoxDecoration(color: Color(0xfff2f2f2)),
-            currentAccountPicture: CircleAvatar(
-              backgroundImage: user.length > 0 && user[0].userImage == ''
-                  ? NetworkImage(
-                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4hBXLI1tGjFgNKdDFogmZi0nlqxXJaFTleQ&usqp=CAU')
-                  : AssetImage('assets/userImage.png') as ImageProvider,
-            ),
-            accountEmail: Text(
-              // ignore: unnecessary_null_comparison
-              user != null
-                  ? user.length > 0
-                      ? user[0].userEmail
-                      : ''
-                  : '',
-              style: TextStyle(
-                color: Colors.black,
-              ),
-            ),
-          ),
-          ListTile(
-            selected: homeColor,
-            onTap: () {
-              // setState(() {
-              //   homeColor = true;
-              //   contactColor = false;
-              //   aboutColor = false;
-              //   cartColor = false;
-              //   categoryColor = false;
-              // });
-              widget._key.currentState!.closeDrawer();
-            },
-            leading: Icon(Icons.home),
-            title: Text(
-              'Home',
-              style: TextStyle(fontSize: 18, fontFamily: 'Lato'),
-            ),
-          ),
-          ListTile(
-            selected: categoryColor,
-            onTap: () {
-              // setState(() {
-              //   categoryColor = true;
-              //   contactColor = false;
-              //   aboutColor = false;
-              //   cartColor = false;
-              //   homeColor = false;
-              // });
+    // List<UserModel> user =
+    //     snapShot.where((element) => element.userId == currentUser.uid).toList();
+    //todo
+    Stream<QuerySnapshot> _userStream =
+        FirebaseFirestore.instance.collection('User').snapshots();
+    return StreamBuilder<QuerySnapshot>(
+      stream: _userStream,
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return Container();
+        }
 
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  // builder: (ctx) => ListCategories(),
-                  builder: (ctx) => ListBrand(),
+        List<UserModel>? snapShot;
+        snapShot = snapshot.data?.docs
+            .map((i) => UserModel(
+                  userId: i['UserId'],
+                  userName: i['UserName'],
+                  userEmail: i['UserEmail'],
+                  userGender: i['UserGender'],
+                  userPhoneNumber: i['phone'],
+                  address: i['address'],
+                ))
+            .toList();
+
+        snapShot = snapShot != null
+            ? snapShot.where((i) => i.userId == currentUser.uid).toList()
+            : snapShot;
+
+        if ((snapshot.data?.docs.length ?? 0) > 0 && snapShot != null) {
+          return Drawer(
+            child: ListView(
+              children: <Widget>[
+                UserAccountsDrawerHeader(
+                  accountName: Text(
+                    snapShot.length > 0 ? snapShot[0].userName : '',
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                  ),
+                  decoration: BoxDecoration(color: Color(0xfff2f2f2)),
+                  currentAccountPicture: CircleAvatar(
+                    backgroundImage: snapShot.length > 0 &&
+                            snapShot[0].userImage == ''
+                        ? NetworkImage(
+                            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4hBXLI1tGjFgNKdDFogmZi0nlqxXJaFTleQ&usqp=CAU')
+                        : AssetImage('assets/userImage.png') as ImageProvider,
+                  ),
+                  accountEmail: Text(
+                    // ignore: unnecessary_null_comparison
+                    snapShot != null
+                        ? snapShot.length > 0
+                            ? snapShot[0].userEmail
+                            : ''
+                        : '',
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                  ),
                 ),
-              );
-            },
-            leading: Icon(Icons.dashboard),
-            title: Text(
-              'Categories',
-              style: TextStyle(fontSize: 18, fontFamily: 'Lato'),
+                ListTile(
+                  selected: homeColor,
+                  onTap: () {
+                    // setState(() {
+                    //   homeColor = true;
+                    //   contactColor = false;
+                    //   aboutColor = false;
+                    //   cartColor = false;
+                    //   categoryColor = false;
+                    // });
+                    widget._key.currentState!.closeDrawer();
+                  },
+                  leading: Icon(Icons.home),
+                  title: Text(
+                    'Home',
+                    style: TextStyle(fontSize: 18, fontFamily: 'Lato'),
+                  ),
+                ),
+                ListTile(
+                  selected: categoryColor,
+                  onTap: () {
+                    // setState(() {
+                    //   categoryColor = true;
+                    //   contactColor = false;
+                    //   aboutColor = false;
+                    //   cartColor = false;
+                    //   homeColor = false;
+                    // });
+
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        // builder: (ctx) => ListCategories(),
+                        builder: (ctx) => ListBrand(),
+                      ),
+                    );
+                  },
+                  leading: Icon(Icons.dashboard),
+                  title: Text(
+                    'Categories',
+                    style: TextStyle(fontSize: 18, fontFamily: 'Lato'),
+                  ),
+                ),
+                ListTile(
+                  selected: cartColor,
+                  onTap: () {
+                    setState(() {
+                      // cartColor = true;
+                      // contactColor = false;
+                      // aboutColor = false;
+                      // homeColor = false;
+                      // categoryColor = false;
+                    });
+                    // productProvider!.resetNotification();
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                          type: PageTransitionType.rightToLeft, child: Cart()),
+                    );
+                  },
+                  leading: Icon(Icons.shopping_bag_rounded),
+                  title: Text(
+                    'Cart',
+                    style: TextStyle(fontSize: 18, fontFamily: 'Lato'),
+                  ),
+                ),
+                ListTile(
+                  selected: cartColor,
+                  onTap: () {
+                    setState(() {
+                      // cartColor = true;
+                      // contactColor = false;
+                      // aboutColor = false;
+                      // homeColor = false;
+                      // categoryColor = false;
+                    });
+                    // productProvider!.resetNotification();
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                          type: PageTransitionType.rightToLeft,
+                          child: HistoryScreen()),
+                    );
+                  },
+                  leading: Icon(Icons.access_time_filled_rounded),
+                  title: Text(
+                    'History',
+                    style: TextStyle(fontSize: 18, fontFamily: 'Lato'),
+                  ),
+                ),
+                ListTile(
+                  selected: cartColor,
+                  onTap: () {
+                    setState(() {
+                      // cartColor = true;
+                      // contactColor = false;
+                      // aboutColor = false;
+                      // homeColor = false;
+                      // categoryColor = false;
+                    });
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                          type: PageTransitionType.rightToLeft,
+                          child: Profile()),
+                    );
+                  },
+                  leading: Icon(Icons.account_circle_rounded),
+                  title: Text(
+                    'Profile',
+                    style: TextStyle(fontSize: 18, fontFamily: 'Lato'),
+                  ),
+                ),
+                Divider(
+                  color: Color.fromARGB(136, 77, 77, 77),
+                  thickness: 1,
+                ),
+                ListTile(
+                  selected: aboutColor,
+                  onTap: () {
+                    // setState(() {
+                    //   aboutColor = true;
+                    //   contactColor = false;
+                    //   homeColor = false;
+                    //   cartColor = false;
+                    //   categoryColor = false;
+                    // });
+                  },
+                  leading: Icon(Icons.info_rounded),
+                  title: Text(
+                    'About',
+                    style: TextStyle(fontSize: 18, fontFamily: 'Lato'),
+                  ),
+                ),
+                ListTile(
+                  selected: contactColor,
+                  onTap: () {
+                    // setState(() {
+                    //   contactColor = true;
+                    //   homeColor = false;
+                    //   aboutColor = false;
+                    //   cartColor = false;
+                    //   categoryColor = false;
+                    // });
+                  },
+                  leading: Icon(Icons.phone),
+                  title: Text(
+                    'Contact us',
+                    style: TextStyle(fontSize: 18, fontFamily: 'Lato'),
+                  ),
+                ),
+                ListTile(
+                  onTap: () {
+                    FirebaseAuth.instance.signOut();
+                    Navigator.pushReplacement(
+                      context,
+                      PageTransition(
+                          type: PageTransitionType.rightToLeft, child: Login()),
+                    );
+                  },
+                  leading: Icon(Icons.exit_to_app_rounded),
+                  title: Text(
+                    'Logout',
+                    style: TextStyle(fontSize: 18, fontFamily: 'Lato'),
+                  ),
+                ),
+              ],
             ),
-          ),
-          ListTile(
-            selected: cartColor,
-            onTap: () {
-              setState(() {
-                // cartColor = true;
-                // contactColor = false;
-                // aboutColor = false;
-                // homeColor = false;
-                // categoryColor = false;
-              });
-              // productProvider!.resetNotification();
-              Navigator.push(
-                context,
-                PageTransition(
-                    type: PageTransitionType.rightToLeft, child: Cart()),
-              );
-            },
-            leading: Icon(Icons.shopping_bag_rounded),
-            title: Text(
-              'Cart',
-              style: TextStyle(fontSize: 18, fontFamily: 'Lato'),
-            ),
-          ),
-          ListTile(
-            selected: cartColor,
-            onTap: () {
-              setState(() {
-                // cartColor = true;
-                // contactColor = false;
-                // aboutColor = false;
-                // homeColor = false;
-                // categoryColor = false;
-              });
-              // productProvider!.resetNotification();
-              Navigator.push(
-                context,
-                PageTransition(
-                    type: PageTransitionType.rightToLeft,
-                    child: HistoryScreen()),
-              );
-            },
-            leading: Icon(Icons.access_time_filled_rounded),
-            title: Text(
-              'History',
-              style: TextStyle(fontSize: 18, fontFamily: 'Lato'),
-            ),
-          ),
-          ListTile(
-            selected: cartColor,
-            onTap: () {
-              setState(() {
-                // cartColor = true;
-                // contactColor = false;
-                // aboutColor = false;
-                // homeColor = false;
-                // categoryColor = false;
-              });
-              Navigator.push(
-                context,
-                PageTransition(
-                    type: PageTransitionType.rightToLeft, child: Profile()),
-              );
-            },
-            leading: Icon(Icons.account_circle_rounded),
-            title: Text(
-              'Profile',
-              style: TextStyle(fontSize: 18, fontFamily: 'Lato'),
-            ),
-          ),
-          Divider(
-            color: Color.fromARGB(136, 77, 77, 77),
-            thickness: 1,
-          ),
-          ListTile(
-            selected: aboutColor,
-            onTap: () {
-              // setState(() {
-              //   aboutColor = true;
-              //   contactColor = false;
-              //   homeColor = false;
-              //   cartColor = false;
-              //   categoryColor = false;
-              // });
-            },
-            leading: Icon(Icons.info_rounded),
-            title: Text(
-              'About',
-              style: TextStyle(fontSize: 18, fontFamily: 'Lato'),
-            ),
-          ),
-          ListTile(
-            selected: contactColor,
-            onTap: () {
-              // setState(() {
-              //   contactColor = true;
-              //   homeColor = false;
-              //   aboutColor = false;
-              //   cartColor = false;
-              //   categoryColor = false;
-              // });
-            },
-            leading: Icon(Icons.phone),
-            title: Text(
-              'Contact us',
-              style: TextStyle(fontSize: 18, fontFamily: 'Lato'),
-            ),
-          ),
-          ListTile(
-            onTap: () {
-              FirebaseAuth.instance.signOut();
-              Navigator.pushReplacement(
-                context,
-                PageTransition(
-                    type: PageTransitionType.rightToLeft, child: Login()),
-              );
-            },
-            leading: Icon(Icons.exit_to_app_rounded),
-            title: Text(
-              'Logout',
-              style: TextStyle(fontSize: 18, fontFamily: 'Lato'),
-            ),
-          ),
-        ],
-      ),
+          );
+        } else {
+          return LinearProgressIndicator();
+        }
+        return Drawer(child: Text(snapShot![0].userEmail));
+      },
     );
+    //todo
+
+    print('LOGGER UID CURRENTUSER: ${this.currentUser.uid}');
   }
 
   Widget _buildProductPopular(List<Product> products) {
@@ -476,8 +506,8 @@ class _HomeState extends State<Home> {
             return Container();
           }
 
-          if (snapshot.data!.docs.length > 0) {
-            this.allProducts = snapshot.data!.docs
+          if ((snapshot.data?.docs.length ?? 0) > 0) {
+            this.allProducts = snapshot.data?.docs
                 .map((i) => Product(
                     image: i['image'],
                     id: i['id'],
@@ -488,7 +518,7 @@ class _HomeState extends State<Home> {
                     idCategory: i['idCategory']))
                 .toList();
             this.popularProducts =
-                this.allProducts!.where((item) => item.isPopular).toList();
+                this.allProducts?.where((item) => item.isPopular).toList();
             // print('logger: ${this.allProducts}');
             return Scaffold(
               key: widget._key,
@@ -504,7 +534,7 @@ class _HomeState extends State<Home> {
                 backgroundColor: Colors.transparent,
                 leading: GestureDetector(
                     onTap: () {
-                      widget._key.currentState!.openDrawer();
+                      widget._key.currentState?.openDrawer();
                     },
                     // child: Container(
                     //     padding: EdgeInsets.only(left: 10),
