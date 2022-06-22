@@ -49,7 +49,7 @@ class CartProvider with ChangeNotifier {
   Future<void> addProductCartIsExistInCart(
       String idProduct, double quantity, String currentUser) async {
     List<CartModel> newListCart = [];
-    getUserId;
+    // getUserId;
     CartModel temp;
     QuerySnapshot cartSnapShot = await FirebaseFirestore.instance
         .collection("cart")
@@ -77,7 +77,7 @@ class CartProvider with ChangeNotifier {
 
   //delete product to cart
   Future<void> deleteProductCart(String id) async {
-    getUidAuth();
+    // getUidAuth();
     await cartCollection.doc(id).delete();
   }
 
@@ -86,16 +86,16 @@ class CartProvider with ChangeNotifier {
     DateTime now = new DateTime.now();
     String formattedDate = DateFormat('dd/MM/yyyy').format(now);
     String formattedTime = DateFormat('kk:mm:ss').format(now);
-    getUidAuth();
-    getUserId;
+    // getUidAuth();
+    // getUserId;
     await cartCollection.doc(id).update(
         {'dateBuy': formattedDate, 'timeBuy': formattedTime, 'isBuy': true});
   }
 
   //complete buy
   Future<void> reBuyProductCart(String id) async {
-    getUidAuth();
-    getUserId;
+    // getUidAuth();
+    // getUserId;
     await cartCollection.doc(id).update({'isBuy': false});
   }
 }

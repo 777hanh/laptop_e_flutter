@@ -31,7 +31,7 @@ class HistoryProvider with ChangeNotifier {
     String formattedDate = DateFormat('dd/MM/yyyy').format(now);
     String formattedTime = DateFormat('kk:mm:ss').format(now);
     final docRef = FirebaseFirestore.instance.collection('history').doc();
-    getUidAuth();
+    // getUidAuth();
     // print('logger2: ${docRef.id}');
     await docRef.set({
       'idProduct': idProduct,
@@ -45,7 +45,7 @@ class HistoryProvider with ChangeNotifier {
 
   //delete product to history
   Future<void> deleteProductHistory(String id) async {
-    getUidAuth();
+    // getUidAuth();
     await historyCollection.doc(id).delete();
   }
 }

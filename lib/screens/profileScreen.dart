@@ -222,31 +222,34 @@ class _ProfileState extends State<Profile> {
                                 ),
                               ),
                               edit == true
-                                  ? Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 215, top: 80),
-                                      child: Card(
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20)),
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            // myDialogBox();
-                                            getImage(
-                                                scource: ImageSource.gallery);
-                                          },
-                                          child: CircleAvatar(
-                                            child: Icon(
-                                              // Icons.camera_alt,
-                                              Icons.edit,
-                                              size: 20,
-                                              color: Colors.black,
-                                            ),
-                                            backgroundColor: Colors.transparent,
-                                          ),
-                                        ),
-                                      ),
-                                    )
+                                  // ? Padding(
+                                  //     padding: const EdgeInsets.only(
+                                  //         left: 215, top: 80),
+                                  //     child: Card(
+                                  //       shape: RoundedRectangleBorder(
+                                  //           borderRadius:
+                                  //               BorderRadius.circular(20)),
+                                  //       child: GestureDetector(
+                                  //         onTap: () {
+                                  //           // myDialogBox();
+                                  //           getImage(
+                                  //               scource: ImageSource.gallery);
+                                  //         },
+                                  //         child: CircleAvatar(
+                                  //           child: Icon(
+                                  //             // Icons.camera_alt,
+                                  //             Icons.edit,
+                                  //             size: 20,
+                                  //             color: Colors.black,
+                                  //           ),
+                                  //           backgroundColor: Colors.transparent,
+                                  //         ),
+                                  //       ),
+                                  //     ),
+                                  //   )
+                                  //*
+                                  ? Container()
+                                  //*
                                   : Container(),
                             ],
                           ),
