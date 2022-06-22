@@ -10,6 +10,7 @@ import 'package:elaptop/provider/carts-provider.dart';
 import 'package:elaptop/provider/productProvider.dart';
 import 'package:elaptop/provider/products-provider.dart';
 import 'package:elaptop/provider/user-provider.dart';
+import 'package:elaptop/provider/userProvider.dart';
 import 'package:elaptop/screens/home.dart';
 import 'package:elaptop/screens/splash.dart';
 import 'package:elaptop/screens/welcome.dart';
@@ -40,6 +41,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider<UserProvider>(
+          create: (context) => UserProvider(),
+        ),
         ChangeNotifierProvider<ProductProvider>(
           create: (context) => ProductProvider(),
         ),

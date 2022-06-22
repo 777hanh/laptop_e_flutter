@@ -57,7 +57,7 @@ class _HomeState extends State<Home> {
       stream: _userStream,
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
-          return Container();
+          return Container(color: Colors.white);
         }
 
         List<UserModel>? snapShot;

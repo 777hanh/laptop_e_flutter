@@ -43,8 +43,6 @@ class CartProvider with ChangeNotifier {
 
   //update product to cart
   Future<void> updateProductCart(String id, double quantity) async {
-    getUidAuth();
-    getUserId;
     await cartCollection.doc(id).update({'quantity': quantity});
   }
 

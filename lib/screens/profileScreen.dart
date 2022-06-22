@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elaptop/models/user.dart';
+import 'package:elaptop/provider/userProvider.dart';
 import 'package:elaptop/screens/home.dart';
 import 'package:elaptop/widgets/myButton.dart';
 import 'package:elaptop/widgets/notification_button.dart';
@@ -20,6 +21,7 @@ class Profile extends StatefulWidget {
 }
 
 bool isMale = true;
+String? userName, userGender, userPhoneNumber, userId, address, userImage;
 
 class _ProfileState extends State<Profile> {
   bool edit = false;
@@ -85,6 +87,9 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     User currentUser = FirebaseAuth.instance.currentUser!;
+    //
+    UserProvider userProvider = Provider.of<UserProvider>(context);
+    //
     List<UserModel> snapShot =
         Provider.of<List<UserModel>>(context, listen: true);
     //
@@ -161,9 +166,17 @@ class _ProfileState extends State<Profile> {
                               icon: Icon(Icons.check,
                                   size: 30, color: Colors.blue),
                               onPressed: () {
-                                _uploadImage(image: _pickedImage);
+                                // _uploadImage(image: _pickedImage);
                                 setState(() {
                                   //todo: save user
+                                  // print('loggger: ${isMale}');
+                                  userProvider.updateUser(
+                                      userName,
+                                      userGender,
+                                      userPhoneNumber,
+                                      userId,
+                                      address,
+                                      userImage);
                                   edit = !edit;
                                 });
                               },
@@ -196,8 +209,13 @@ class _ProfileState extends State<Profile> {
                                     CircleAvatar(
                                       maxRadius: 65,
                                       backgroundImage: _pickedImage == null
-                                          ? AssetImage('assets/userImage.png')
-                                              as ImageProvider
+                                          ? user.length > 0 &&
+                                                  user[0].userImage != ''
+                                              ? NetworkImage(
+                                                  '${user[0].userImage}')
+                                              : AssetImage(
+                                                      'assets/userImage.png')
+                                                  as ImageProvider
                                           : FileImage(_pickedImage!),
                                     ),
                                   ],
@@ -248,11 +266,13 @@ class _ProfileState extends State<Profile> {
                                               MainAxisAlignment.spaceEvenly,
                                           children: [
                                             _buildTextFormField(
+                                                type: 'userName',
                                                 enable: false,
                                                 name: user.length > 0
                                                     ? user[0].userName
                                                     : ''),
                                             _buildTextFormField(
+                                                type: 'email',
                                                 enable: true,
                                                 name: user.length > 0
                                                     ? user[0].userEmail
@@ -262,6 +282,9 @@ class _ProfileState extends State<Profile> {
                                               onTap: () {
                                                 setState(() {
                                                   isMale = !isMale;
+                                                  userGender = isMale
+                                                      ? 'Male'
+                                                      : 'Female';
                                                 });
                                               },
                                               child: Container(
@@ -295,12 +318,16 @@ class _ProfileState extends State<Profile> {
                                             //*
                                             _buildTextFormField(
                                                 enable: false,
+                                                type: 'address',
                                                 name: user.length > 0
-                                                    ? user[0].address == ''
-                                                        ? 'Input address . . .'
+                                                    ? user[0].address == '' ||
+                                                            user[0].address ==
+                                                                null
+                                                        ? ''
                                                         : user[0].address
                                                     : ''),
                                             _buildTextFormField(
+                                                type: 'userPhoneNumber',
                                                 enable: false,
                                                 name: user.length > 0
                                                     ? user[0].userPhoneNumber
@@ -324,8 +351,10 @@ class _ProfileState extends State<Profile> {
                                             _buildSingleContainer(
                                                 start: 'Address',
                                                 end: user.length > 0
-                                                    ? user[0].address == ''
-                                                        ? 'Input address . . .'
+                                                    ? user[0].address == '' ||
+                                                            user[0].address ==
+                                                                null
+                                                        ? ''
                                                         : user[0].address
                                                     : ''),
                                             _buildSingleContainer(
@@ -358,7 +387,22 @@ class _ProfileState extends State<Profile> {
                                     onPressed: () {
                                       setState(() {
                                         this.edit = !this.edit;
+                                        userId = user[0].userId;
+                                        userName = user[0].userName;
+                                        userGender = user[0].userGender;
+                                        isMale = user[0].userGender == 'Male'
+                                            ? true
+                                            : false;
+                                        userPhoneNumber =
+                                            user[0].userPhoneNumber;
+                                        address = user[0].address != null
+                                            ? user[0].address
+                                            : '';
+                                        userImage = user[0].userImage != null
+                                            ? user[0].userImage
+                                            : '';
                                       });
+                                      // print("logger: ${isMale}");
                                     },
                                     name: 'Edit Profile',
                                   )
@@ -405,9 +449,9 @@ class _ProfileState extends State<Profile> {
                 color: Colors.black45,
               ),
             ),
-            end == 'Input address . . .'
+            end == ''
                 ? Text(
-                    'Input address . . .',
+                    'Empty',
                     style: TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
@@ -430,16 +474,32 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  Widget _buildTextFormField({String? name, bool? enable}) {
+  Widget _buildTextFormField({String? name, bool? enable, String? type}) {
     return TextFormField(
       readOnly: enable!,
+      onChanged: (value) {
+        setState(() {
+          switch (type) {
+            case 'userName':
+              userName = value;
+              break;
+            case 'userPhoneNumber':
+              userPhoneNumber = value;
+              break;
+            case 'address':
+              address = value;
+              break;
+          }
+        });
+      },
+      initialValue: name == '' ? '' : name,
       decoration: InputDecoration(
         filled: true,
-        fillColor: enable ? Color(0xCCCCCCCC) : Color(0xffff),
-        hintText: name!,
-        hintStyle: TextStyle(
-            color:
-                name == 'Input address . . .' ? Colors.black26 : Colors.black),
+        fillColor: enable ? Color.fromARGB(204, 230, 229, 229) : Color(0xffff),
+        hintText: name! == '' ? 'Empty' : '',
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        labelText: type,
+        hintStyle: TextStyle(color: name == '' ? Colors.black26 : Colors.black),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
         ),

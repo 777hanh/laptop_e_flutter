@@ -16,6 +16,18 @@ class UserProvider with ChangeNotifier {
   String get getUserId {
     return uid!;
   }
-  //
 
+  final CollectionReference cartCollection =
+      FirebaseFirestore.instance.collection('User');
+  //update user
+  Future<void> updateUser(String? userName, userGender, userPhoneNumber, userId,
+      address, userImage) async {
+    await cartCollection.doc(userId).update({
+      'UserName': userName,
+      'UserGender': userGender,
+      'address': address,
+      'userImage': userImage,
+      'phone': userPhoneNumber
+    });
+  }
 }
