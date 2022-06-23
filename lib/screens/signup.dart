@@ -144,7 +144,7 @@ class _SignUpState extends State<SignUp> {
 
   Widget _buildAllTextField() {
     return Container(
-      height: MediaQuery.of(context).size.height / 2.5,
+      height: MediaQuery.of(context).size.height * (400 / 812),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
@@ -255,39 +255,43 @@ class _SignUpState extends State<SignUp> {
   }
 
   Widget _buildBottomPart() {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 10),
-      width: double.infinity,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          _buildAllTextField(),
+    return Column(
+      children: [
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: 10),
+          width: double.infinity,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              _buildAllTextField(),
 
 //*Button-Register
-          Container(
-            padding: EdgeInsets.only(top: 20, bottom: 30),
-            child: MyButton(
-              onPressed: () {
-                validation();
-              },
-              name: 'Register',
-              color: Color(0xFF0B5EA7),
-            ),
-          ),
+              Container(
+                padding: EdgeInsets.only(top: 10, bottom: 30),
+                child: MyButton(
+                  onPressed: () {
+                    validation();
+                  },
+                  name: 'Register',
+                  color: Color(0xFF0B5EA7),
+                ),
+              ),
 
 //* Login
-          ChangeScreen(
-              name: 'Login',
-              onTap: () {
-                Navigator.of(context).pushReplacement(PageTransition(
-                  type: PageTransitionType.fade,
-                  alignment: Alignment.bottomCenter,
-                  child: Login(),
-                ));
-              },
-              whichAccount: 'I Have Already Account!'),
-        ],
-      ),
+              ChangeScreen(
+                  name: 'Login',
+                  onTap: () {
+                    Navigator.of(context).pushReplacement(PageTransition(
+                      type: PageTransitionType.fade,
+                      alignment: Alignment.bottomCenter,
+                      child: Login(),
+                    ));
+                  },
+                  whichAccount: 'I Have Already Account!'),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -297,44 +301,46 @@ class _SignUpState extends State<SignUp> {
       key: _scaffoldKey,
       resizeToAvoidBottomInset: false,
       body: SafeArea(
-        child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 15),
-          height: MediaQuery.of(context).size.height * (710 / 812),
-          child: ListView(
-            children: [
-              Form(
-                key: _formKey,
-                child: Container(
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        height: MediaQuery.of(context).size.height / 3,
-                        width: double.infinity,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            SizedBox(
-                              height: 13,
-                            ),
-                            SizedBox(
-                              height: 150,
-                              child: Image.asset('assets/logo.png'),
-                            ),
-                            SizedBox(height: 5),
-                            Container(
-                              margin: EdgeInsets.symmetric(horizontal: 20),
-                              child: _buildHeadPart(),
-                            ),
-                          ],
+        child: ListView(
+          children: [
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 15),
+              height: MediaQuery.of(context).size.height * (770 / 812),
+              child: ListView(
+                children: [
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          height: MediaQuery.of(context).size.height / 3.5,
+                          width: double.infinity,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              // SizedBox(
+                              //   height: 13,
+                              // ),
+                              SizedBox(
+                                height: 120,
+                                child: Image.asset('assets/logo.png'),
+                              ),
+                              // SizedBox(height: 5),
+                              Container(
+                                margin: EdgeInsets.symmetric(horizontal: 20),
+                                child: _buildHeadPart(),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      _buildBottomPart(),
-                    ],
+                        _buildBottomPart(),
+                      ],
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
