@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:elaptop/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -32,10 +33,34 @@ class UserProvider with ChangeNotifier {
   }
 
   //get user buy userId
-  Future<void> getUserBuyId(String userId) async {
+
+  List<UserModel> UserList = [];
+  Future<void> getUserBuyIdList(String userId) async {
+    UserModel? user;
+    List<UserModel> newList = [];
     QuerySnapshot userSnapShot = await FirebaseFirestore.instance
         .collection('User')
         .where('UserId', isEqualTo: userId)
         .get();
+    userSnapShot.docs.forEach(
+      (i) {
+        user = UserModel(
+          userId: i['UserId'],
+          userName: i['UserName'],
+          userEmail: i['UserEmail'],
+          userGender: i['UserGender'],
+          userPhoneNumber: i['phone'],
+          address: i['address'],
+          userImage: i['userImage'],
+        );
+        newList.add(user!);
+      },
+    );
+    UserList = newList;
+  }
+
+  List<UserModel> getUserById(String userId) {
+    getUserBuyIdList(userId);
+    return UserList;
   }
 }
