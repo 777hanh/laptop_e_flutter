@@ -92,10 +92,53 @@ class CartProvider with ChangeNotifier {
         {'dateBuy': formattedDate, 'timeBuy': formattedTime, 'isBuy': true});
   }
 
-  //complete buy
+  //buy again
   Future<void> reBuyProductCart(String id) async {
-    // getUidAuth();
-    // getUserId;
     await cartCollection.doc(id).update({'isBuy': false});
+  }
+
+  //buy again if existing in cart
+  //check product is in cart
+  Future<void> reBuyProductExistingInCart(String idProduct, String currentUser,
+      double quantity, String cartId) async {
+    CartModel temp;
+    List<CartModel> newListCart = [];
+    QuerySnapshot cartSnapShot = await FirebaseFirestore.instance
+        .collection("cart")
+        .where('user', isEqualTo: currentUser)
+        .where('isBuy', isEqualTo: false)
+        .get();
+    cartSnapShot.docs.forEach((element) {
+      temp = CartModel(
+          id: element['id'],
+          idUser: element['user'],
+          idProduct: element['idProduct'],
+          quantity: element['quantity'].toDouble(),
+          isBuy: element['isBuy']);
+      newListCart.add(temp);
+    });
+
+    List<CartModel> newCart =
+        newListCart.where((item) => item.idProduct == idProduct).toList();
+
+    if (newCart.length > 0) {
+      //update quantity of product in cart
+      await cartCollection.doc(newCart[0].id).update({
+        'quantity': quantity + (newCart[0].quantity!.toDouble()),
+      });
+      await deleteProductCart(cartId);
+    } else {
+      //update isBuy false -> true
+      await reBuyProductCart(cartId);
+    }
+
+    // print('loggger idProduct in CartProvider: ${idProduct}');
+    // print('loggger currentUser in CartProvider: ${currentUser}');
+    // print('loggger quantity in CartProvider: ${quantity}');
+    // print('loggger in CartProvider:; ${newCart.length}');
+
+    // await cartCollection
+    //     .doc(newCart[0].id)
+    //     .update({'quantity': quantity + (newCart[0].quantity!.toDouble())});
   }
 }

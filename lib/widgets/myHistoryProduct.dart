@@ -3,6 +3,7 @@ import 'package:elaptop/models/cart.dart';
 import 'package:elaptop/models/product.dart';
 import 'package:elaptop/provider/cartProvider.dart';
 import 'package:elaptop/screens/detail.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:page_transition/page_transition.dart';
@@ -14,11 +15,33 @@ class MySingleHistoryProduct extends StatelessWidget {
   List<Product>? snapShot;
   MySingleHistoryProduct({required this.cart, this.isInCartScreen = true});
 
+//check product is existing in Cart
+//if not existing -> update isBuy : true -> false
+//if existing ->  add quantity's product to cart
+  // void CheckIsProductInCart(String idProduct, context, List<CartModel> lstCart,
+  //     double quantity, String currentUser) {
+  //   List<CartModel> lstCheck = lstCart
+  //       .where((item) =>
+  //           item.idProduct == idProduct &&
+  //           item.idUser == currentUser &&
+  //           item.isBuy == false)
+  //       .toList();
+  //   CartProvider cartProvider =
+  //       Provider.of<CartProvider>(context, listen: false);
+  //   if (lstCheck.length > 0) {
+  //     cartProvider.addProductCartIsExistInCart(
+  //         idProduct, quantity, currentUser);
+  //   } else {
+  //     cartProvider.reBuyProductCart(cart.id!);
+  //   }
+  // }
+
   @override
   Widget build(BuildContext context) {
     CartProvider? cartProvider = Provider.of<CartProvider>(context);
     double amount = 0;
     amount = cart.quantity!;
+    User? currentUser = FirebaseAuth.instance.currentUser;
 
     Stream<QuerySnapshot> _productsStream =
         FirebaseFirestore.instance.collection('products').snapshots();
@@ -174,7 +197,11 @@ class MySingleHistoryProduct extends StatelessWidget {
                                               icon: Icon(Icons.restore_rounded),
                                               onPressed: () {
                                                 cartProvider
-                                                    .reBuyProductCart(cart.id!);
+                                                    .reBuyProductExistingInCart(
+                                                        cart.idProduct!,
+                                                        currentUser!.uid,
+                                                        cart.quantity!,
+                                                        cart.id!);
                                                 // .completeBuyProductCart(cart.id!);
                                                 // print('LOGGER: ${cart.id!}');
                                               },
