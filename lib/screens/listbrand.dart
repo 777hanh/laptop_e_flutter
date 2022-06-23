@@ -1,5 +1,6 @@
 import 'package:elaptop/screens/home.dart';
 import 'package:elaptop/screens/listproduct.dart';
+import 'package:elaptop/screens/searchScreen.dart';
 import 'package:elaptop/widgets/myCardBrand.dart';
 import 'package:elaptop/widgets/notification_button.dart';
 import 'package:flutter/material.dart';
@@ -158,7 +159,14 @@ class ListBrand extends StatelessWidget {
           actions: [
             IconButton(
               icon: Icon(Icons.search, color: Colors.black),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  PageTransition(
+                      type: PageTransitionType.rightToLeft,
+                      child: SearchScreen()),
+                );
+              },
             ),
             NotificationButton(),
           ],

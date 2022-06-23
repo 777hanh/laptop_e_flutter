@@ -14,6 +14,7 @@ import 'package:elaptop/screens/listbrand.dart';
 import 'package:elaptop/screens/listproduct.dart';
 import 'package:elaptop/screens/login.dart';
 import 'package:elaptop/screens/profileScreen.dart';
+import 'package:elaptop/screens/searchScreen.dart';
 import 'package:elaptop/widgets/myCardBrand.dart';
 import 'package:elaptop/widgets/myCardProduct.dart';
 import 'package:elaptop/widgets/notification_button.dart';
@@ -488,13 +489,10 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    //todo test StreamBuilder
-
     return StreamBuilder<QuerySnapshot>(
         stream: _productsStream,
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
-            // return Text('Something went wrong');
             return Container();
           }
 
@@ -537,7 +535,20 @@ class _HomeState extends State<Home> {
                     //     child: Image.asset('assets/logo.png')),
                     child: Icon(Icons.menu_rounded,
                         color: Colors.black, size: 35)),
-                actions: <Widget>[NotificationButton()],
+                actions: <Widget>[
+                  IconButton(
+                    icon: Icon(Icons.search, color: Colors.black),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: SearchScreen()),
+                      );
+                    },
+                  ),
+                  NotificationButton()
+                ],
               ),
               body: Container(
                 margin: EdgeInsets.symmetric(horizontal: 15),
@@ -546,24 +557,24 @@ class _HomeState extends State<Home> {
                 child: ListView(
                   children: <Widget>[
                     //* search
-                    Container(
-                      height: 80,
-                      width: double.infinity,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          TextFormField(
-                            decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.search),
-                              hintText: "Which laptop do you want to buy ?",
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    // Container(
+                    //   height: 80,
+                    //   width: double.infinity,
+                    //   child: Column(
+                    //     mainAxisAlignment: MainAxisAlignment.center,
+                    //     children: [
+                    //       TextFormField(
+                    //         decoration: InputDecoration(
+                    //           prefixIcon: Icon(Icons.search),
+                    //           hintText: "Which laptop do you want to buy ?",
+                    //           border: OutlineInputBorder(
+                    //             borderRadius: BorderRadius.circular(30),
+                    //           ),
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
                     Container(
                       width: double.infinity,
                       child: Column(
