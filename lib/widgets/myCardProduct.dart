@@ -10,17 +10,18 @@ class MyCardProduct extends StatelessWidget {
   final String? image;
   final double? price;
   Product product;
-  MyCardProduct({this.name, this.price, this.image, this.id, required this.product});
+  MyCardProduct(
+      {this.name, this.price, this.image, this.id, required this.product});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(PageTransition(
-                    type: PageTransitionType.fade,
-                    alignment: Alignment.bottomCenter,
-                    child: Detail(product),
-                  ));
+          type: PageTransitionType.fade,
+          alignment: Alignment.bottomCenter,
+          child: Detail(product),
+        ));
       },
       child: Container(
         child: Column(
@@ -52,7 +53,7 @@ class MyCardProduct extends StatelessWidget {
                             alignment: Alignment.center),
                       ),
                     ),
-    //*inforOfProduct
+                    //*inforOfProduct
                     Text(
                       // '${price}₫',
                       NumberFormat.currency(

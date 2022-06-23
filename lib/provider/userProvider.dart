@@ -30,4 +30,12 @@ class UserProvider with ChangeNotifier {
       'phone': userPhoneNumber
     });
   }
+
+  //get user buy userId
+  Future<void> getUserBuyId(String userId) async {
+    QuerySnapshot userSnapShot = await FirebaseFirestore.instance
+        .collection('User')
+        .where('UserId', isEqualTo: userId)
+        .get();
+  }
 }
